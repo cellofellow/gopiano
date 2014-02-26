@@ -5,24 +5,26 @@ import (
 	"code.google.com/p/go.crypto/blowfish"
 	"encoding/hex"
 	"encoding/json"
+	"github.com/cellofellow/gopiano/requests"
+	"github.com/cellofellow/gopiano/responses"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"github.com/cellofellow/gopiano/requests"
-	"github.com/cellofellow/gopiano/responses"
+	"strconv"
 	"strings"
+	"time"
 )
 
 type ClientDescription map[string]string
 
 var AndroidClient = ClientDescription{
-	"device_model": "android-generic",
+	"deviceModel": "android-generic",
 	"username":     "android",
 	"password":     "AC7IBG09A3DTSYM4R41UJWL07VLN8JI7",
-	"base_url":     "tuner.pandora.com/services/json/",
-	"encrypt_key":  "6#26FRL$ZWD",
-	"decrypt_key":  "R=U!LH$O2B#",
+	"baseUrl":     "tuner.pandora.com/services/json/",
+	"encryptKey":  "6#26FRL$ZWD",
+	"decryptKey":  "R=U!LH$O2B#",
 	"version":      "5",
 }
 
@@ -31,16 +33,17 @@ type Client struct {
 	http        *http.Client
 	encrypter   *blowfish.Cipher
 	decrypter   *blowfish.Cipher
+	timeOffset  time.Duration
 }
 
 func NewClient(d ClientDescription) *Client {
 	client := &http.Client{}
-	encrypter, err := blowfish.NewCipher([]byte(d["encrypt_key"]))
+	encrypter, err := blowfish.NewCipher([]byte(d["encryptKey"]))
 	if err != nil {
 		// TODO Handle error
 		log.Fatal(err)
 	}
-	decrypter, err := blowfish.NewCipher([]byte(d["decrypt_key"]))
+	decrypter, err := blowfish.NewCipher([]byte(d["decryptKey"]))
 	if err != nil {
 		// TODO Handle error
 		log.Fatal(err)
@@ -57,7 +60,7 @@ func (c *Client) encrypt(data string) *strings.Reader {
 	chunks := make([]string, 0)
 	for i := 0; i < len(data); i += 8 {
 		var buf [8]byte
-		var crypt [8]byte;
+		var crypt [8]byte
 		copy(buf[:], data[i:])
 		c.encrypter.Encrypt(crypt[:], buf[:])
 		encoded := hex.EncodeToString(crypt[:])
@@ -84,7 +87,7 @@ func (c *Client) decrypt(data string) *strings.Reader {
 }
 
 func (c *Client) pandoraCall(protocol string, method string, body io.Reader, data interface{}) error {
-	callUrl := protocol + c.description["base_url"] + "?method=" + method
+	callUrl := protocol + c.description["baseUrl"] + "?method=" + method
 	req, err := http.NewRequest("POST", callUrl, body)
 	if err != nil {
 		// TODO Handle error.
@@ -141,7 +144,7 @@ func (c *Client) PartnerLogin() (*responses.PartnerLogin, error) {
 		Username:    c.description["username"],
 		Password:    c.description["password"],
 		Version:     c.description["version"],
-		DeviceModel: c.description["device_model"],
+		DeviceModel: c.description["deviceModel"],
 		IncludeUrls: true,
 	}
 	requestDataEncoded, err := json.Marshal(requestData)
