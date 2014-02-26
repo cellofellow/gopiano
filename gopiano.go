@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -86,8 +87,8 @@ func (c *Client) decrypt(data string) *strings.Reader {
 	return strings.NewReader(strings.Join(chunks, ""))
 }
 
-func (c *Client) pandoraCall(protocol string, method string, body io.Reader, data interface{}) error {
-	callUrl := protocol + c.description["baseUrl"] + "?method=" + method
+func (c *Client) PandoraCall(protocol string, urlArgs url.Values, body io.Reader, data interface{}) error {
+	callUrl := protocol + c.description["baseUrl"] + "?" + urlArgs.Encode()
 	req, err := http.NewRequest("POST", callUrl, body)
 	if err != nil {
 		// TODO Handle error.
@@ -124,22 +125,20 @@ func (c *Client) pandoraCall(protocol string, method string, body io.Reader, dat
 	return nil
 }
 
-func (c *Client) HttpsCall(method string, body io.Reader, data interface{}) error {
-	return c.pandoraCall("https://", method, body, data)
-}
-
-func (c *Client) BlowfishCall(method string, body *io.Reader, data interface{}) error {
-	bodyBytes, err := ioutil.ReadAll(*body)
+func (c *Client) BlowfishCall(protocol string, urlArgs url.Values, body io.Reader, data interface{}) error {
+	bodyBytes, err := ioutil.ReadAll(body)
 	if err != nil {
 		// TODO Handle error
 		log.Fatal(err)
 	}
 	encrypted := c.encrypt(string(bodyBytes))
-	return c.pandoraCall("http://", method, encrypted, data)
+	return c.PandoraCall(protocol, urlArgs, encrypted, data)
 }
 
 func (c *Client) PartnerLogin() (*responses.PartnerLogin, error) {
-	method := "auth.partnerLogin"
+	urlArgs := url.Values{}
+	urlArgs.Add("method", "auth.partnerLogin")
+
 	requestData := requests.PartnerLogin{
 		Username:    c.description["username"],
 		Password:    c.description["password"],
@@ -154,7 +153,7 @@ func (c *Client) PartnerLogin() (*responses.PartnerLogin, error) {
 	}
 	requestDataReader := bytes.NewReader(requestDataEncoded)
 	var resp responses.PartnerLogin
-	err = c.HttpsCall(method, requestDataReader, &resp)
+	err = c.PandoraCall("https://", urlArgs, requestDataReader, &resp)
 	if err != nil {
 		// TODO Handle error
 		return nil, err
