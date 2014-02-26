@@ -159,6 +159,20 @@ func (c *Client) PartnerLogin() (*responses.PartnerLogin, error) {
 		// TODO Handle error
 		return nil, err
 	}
-	// TODO store response data, including decrypting and decoding the syncTime.
+
+	var syncTime []byte
+	syncTime, err = ioutil.ReadAll(c.decrypt(resp.Result.SyncTime))
+	if err != nil {
+		// TODO Handle error
+		log.Fatal(err)
+	}
+	resp.Result.SyncTime = string(syncTime[4:14])
+	i, err := strconv.ParseInt(resp.Result.SyncTime, 10, 32)
+	if err != nil {
+		// TODO Handle error
+		log.Fatal(err)
+	}
+	c.timeOffset = time.Unix(i, 0).Sub(time.Now())
+
 	return &resp, nil
 }
