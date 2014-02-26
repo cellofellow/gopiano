@@ -3,8 +3,9 @@ package gopiano
 import "io/ioutil"
 import "testing"
 
+var client *Client = NewClient(AndroidClient)
+
 func Test_Encrypt_1(t *testing.T) {
-	client := NewClient(AndroidClient)
 	testString := "foobar"
 	expected := "3c739d4e29b5d6c6"
 	encrypted := client.encrypt(testString)
@@ -20,7 +21,6 @@ func Test_Encrypt_1(t *testing.T) {
 }
 
 func Test_Decrypt_1(t *testing.T) {
-	client := NewClient(AndroidClient)
 	expected := "foobar"
 	testString := "95b6027f2d427dc0"
 	decrypted := client.decrypt(testString)
