@@ -36,8 +36,15 @@ func Test_Decrypt_1(t *testing.T) {
 }
 
 func Test_PartnerLogin_1(t *testing.T) {
-	client := NewClient(AndroidClient)
 	response, err := client.PartnerLogin()
+	if err != nil {
+		t.Error(err)
+	}
+	t.Logf("%+v\n", response)
+}
+
+func Test_UserLogin_1(t *testing.T) {
+	response, err := client.UserLogin("mellowcellofellow@gmail.com", "Great8")
 	if err != nil {
 		t.Error(err)
 	}

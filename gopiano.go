@@ -30,11 +30,15 @@ var AndroidClient = ClientDescription{
 }
 
 type Client struct {
-	description ClientDescription
-	http        *http.Client
-	encrypter   *blowfish.Cipher
-	decrypter   *blowfish.Cipher
-	timeOffset  time.Duration
+	description      ClientDescription
+	http             *http.Client
+	encrypter        *blowfish.Cipher
+	decrypter        *blowfish.Cipher
+	timeOffset       time.Duration
+	partnerAuthToken string
+	partnerID        string
+	userAuthToken    string
+	userID           string
 }
 
 func NewClient(d ClientDescription) *Client {
@@ -171,7 +175,45 @@ func (c *Client) PartnerLogin() (*responses.PartnerLogin, error) {
 		// TODO Handle error
 		log.Fatal(err)
 	}
+
+	// Set partner data onto client for later use.
 	c.timeOffset = time.Unix(i, 0).Sub(time.Now())
+	c.partnerAuthToken = resp.Result.PartnerAuthToken
+	c.partnerID = resp.Result.PartnerID
+
+	return &resp, nil
+}
+
+
+func (c *Client) UserLogin(username, password string) (*responses.UserLogin, error) {
+	urlArgs := url.Values{}
+	urlArgs.Add("method", "auth.userLogin")
+	urlArgs.Add("partner_id", c.partnerID)
+	urlArgs.Add("auth_token", c.partnerAuthToken)
+
+	requestData := requests.UserLogin{
+		PartnerAuthToken: c.partnerAuthToken,
+		LoginType: "user",
+		Username: username,
+		Password: password,
+		SyncTime: int(time.Now().Add(c.timeOffset).Unix()),
+	}
+	requestDataEncoded, err := json.Marshal(requestData)
+	if err != nil {
+		// TODO Handle error
+		log.Fatal(err)
+	}
+	requestDataReader := bytes.NewReader(requestDataEncoded)
+	var resp responses.UserLogin
+	err = c.PandoraCall("https://", urlArgs, requestDataReader, &resp)
+	if err != nil {
+		// TODO Handle error
+		return nil, err
+	}
+
+	// Set user data onto client for later use.
+	c.userAuthToken = resp.Result.UserAuthToken
+	c.userID = resp.Result.UserID
 
 	return &resp, nil
 }
