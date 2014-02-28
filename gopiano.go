@@ -21,12 +21,12 @@ type ClientDescription map[string]string
 
 var AndroidClient = ClientDescription{
 	"deviceModel": "android-generic",
-	"username":     "android",
-	"password":     "AC7IBG09A3DTSYM4R41UJWL07VLN8JI7",
+	"username":    "android",
+	"password":    "AC7IBG09A3DTSYM4R41UJWL07VLN8JI7",
 	"baseUrl":     "tuner.pandora.com/services/json/",
 	"encryptKey":  "6#26FRL$ZWD",
 	"decryptKey":  "R=U!LH$O2B#",
-	"version":      "5",
+	"version":     "5",
 }
 
 type Client struct {
@@ -91,7 +91,22 @@ func (c *Client) decrypt(data string) string {
 	return strings.Join(chunks, "")
 }
 
-func (c *Client) PandoraCall(protocol string, urlArgs url.Values, body io.Reader, data interface{}) error {
+func (c *Client) PandoraCall(protocol string, method string, body io.Reader, data interface{}) error {
+	urlArgs := url.Values{
+		"method": {method},
+	}
+
+	if c.partnerID != "" {
+		urlArgs.Add("partner_id", c.partnerID)
+	}
+	if c.userID != "" {
+		urlArgs.Add("user_id", c.userID)
+	}
+	if c.userAuthToken != "" && c.partnerAuthToken == "" {
+		urlArgs.Add("auth_token", c.userAuthToken)
+	} else if c.partnerAuthToken != "" && c.userAuthToken == "" {
+		urlArgs.Add("auth_token", c.partnerAuthToken)
+	}
 	callUrl := protocol + c.description["baseUrl"] + "?" + urlArgs.Encode()
 
 	//// Clone of actual request for debugging.
@@ -112,7 +127,7 @@ func (c *Client) PandoraCall(protocol string, urlArgs url.Values, body io.Reader
 		// TODO Handle error.
 		log.Fatal(err)
 	}
-	req.Header.Add("User-Agent", "pithos")
+	req.Header.Add("User-Agent", "gopiano")
 	req.Header.Add("Content-type", "text/plain")
 
 	resp, err := c.http.Do(req)
@@ -144,20 +159,17 @@ func (c *Client) PandoraCall(protocol string, urlArgs url.Values, body io.Reader
 	return nil
 }
 
-func (c *Client) BlowfishCall(protocol string, urlArgs url.Values, body io.Reader, data interface{}) error {
+func (c *Client) BlowfishCall(protocol string, method string, body io.Reader, data interface{}) error {
 	bodyBytes, err := ioutil.ReadAll(body)
 	if err != nil {
 		// TODO Handle error
 		log.Fatal(err)
 	}
 	encrypted := strings.NewReader(c.encrypt(string(bodyBytes)))
-	return c.PandoraCall(protocol, urlArgs, encrypted, data)
+	return c.PandoraCall(protocol, method, encrypted, data)
 }
 
 func (c *Client) PartnerLogin() (*responses.PartnerLogin, error) {
-	urlArgs := url.Values{}
-	urlArgs.Add("method", "auth.partnerLogin")
-
 	requestData := requests.PartnerLogin{
 		Username:    c.description["username"],
 		Password:    c.description["password"],
@@ -172,7 +184,7 @@ func (c *Client) PartnerLogin() (*responses.PartnerLogin, error) {
 	}
 	requestDataReader := bytes.NewReader(requestDataEncoded)
 	var resp responses.PartnerLogin
-	err = c.PandoraCall("https://", urlArgs, requestDataReader, &resp)
+	err = c.PandoraCall("https://", "auth.partnerLogin", requestDataReader, &resp)
 	if err != nil {
 		// TODO Handle error
 		return nil, err
@@ -194,19 +206,13 @@ func (c *Client) PartnerLogin() (*responses.PartnerLogin, error) {
 	return &resp, nil
 }
 
-
 func (c *Client) UserLogin(username, password string) (*responses.UserLogin, error) {
-	urlArgs := url.Values{}
-	urlArgs.Add("method", "auth.userLogin")
-	urlArgs.Add("partner_id", c.partnerID)
-	urlArgs.Add("auth_token", c.partnerAuthToken)
-
 	requestData := requests.UserLogin{
 		PartnerAuthToken: c.partnerAuthToken,
-		LoginType: "user",
-		Username: username,
-		Password: password,
-		SyncTime: int(time.Now().Add(c.timeOffset).Unix()),
+		LoginType:        "user",
+		Username:         username,
+		Password:         password,
+		SyncTime:         int(time.Now().Add(c.timeOffset).Unix()),
 	}
 	requestDataEncoded, err := json.Marshal(requestData)
 	if err != nil {
@@ -215,7 +221,7 @@ func (c *Client) UserLogin(username, password string) (*responses.UserLogin, err
 	}
 	requestDataReader := bytes.NewReader(requestDataEncoded)
 	var resp responses.UserLogin
-	err = c.BlowfishCall("https://", urlArgs, requestDataReader, &resp)
+	err = c.BlowfishCall("https://", "auth.userLogin", requestDataReader, &resp)
 	if err != nil {
 		// TODO Handle error
 		return nil, err
