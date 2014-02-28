@@ -61,7 +61,7 @@ func NewClient(d ClientDescription) *Client {
 	}
 }
 
-func (c *Client) encrypt(data string) *strings.Reader {
+func (c *Client) encrypt(data string) string {
 	chunks := make([]string, 0)
 	for i := 0; i < len(data); i += 8 {
 		var buf [8]byte
@@ -71,10 +71,10 @@ func (c *Client) encrypt(data string) *strings.Reader {
 		encoded := hex.EncodeToString(crypt[:])
 		chunks = append(chunks, encoded)
 	}
-	return strings.NewReader(strings.Join(chunks, ""))
+	return strings.Join(chunks, "")
 }
 
-func (c *Client) decrypt(data string) *strings.Reader {
+func (c *Client) decrypt(data string) string {
 	chunks := make([]string, 0)
 	for i := 0; i < len(data); i += 16 {
 		var buf [16]byte
@@ -88,18 +88,33 @@ func (c *Client) decrypt(data string) *strings.Reader {
 		c.decrypter.Decrypt(decrypted[:], decoded[:])
 		chunks = append(chunks, strings.Trim(string(decrypted[:]), "\x00"))
 	}
-	return strings.NewReader(strings.Join(chunks, ""))
+	return strings.Join(chunks, "")
 }
 
 func (c *Client) PandoraCall(protocol string, urlArgs url.Values, body io.Reader, data interface{}) error {
 	callUrl := protocol + c.description["baseUrl"] + "?" + urlArgs.Encode()
+
+	//// Clone of actual request for debugging.
+	//bodyBytes, err := ioutil.ReadAll(body)
+	//debugBody := strings.NewReader(string(bodyBytes))
+	//debugRequest, err := http.NewRequest("POST", callUrl, debugBody)
+	//if err != nil {
+	//	// TODO Handle error.
+	//	log.Fatal(err)
+	//}
+	//debugRequest.Header.Add("User-Agent", "pithos")
+	//debugRequest.Header.Add("Content-type", "text/plain")
+	//debugRequest.Write(os.Stderr)
+	//body = strings.NewReader(string(bodyBytes))
+
 	req, err := http.NewRequest("POST", callUrl, body)
 	if err != nil {
 		// TODO Handle error.
 		log.Fatal(err)
 	}
-	req.Header.Add("User-Agent", "gopiano")
-	req.Header.Add("Content-Type", "text/plain")
+	req.Header.Add("User-Agent", "pithos")
+	req.Header.Add("Content-type", "text/plain")
+
 	resp, err := c.http.Do(req)
 	if err != nil {
 		// TODO Handle error
@@ -135,7 +150,7 @@ func (c *Client) BlowfishCall(protocol string, urlArgs url.Values, body io.Reade
 		// TODO Handle error
 		log.Fatal(err)
 	}
-	encrypted := c.encrypt(string(bodyBytes))
+	encrypted := strings.NewReader(c.encrypt(string(bodyBytes)))
 	return c.PandoraCall(protocol, urlArgs, encrypted, data)
 }
 
@@ -163,12 +178,7 @@ func (c *Client) PartnerLogin() (*responses.PartnerLogin, error) {
 		return nil, err
 	}
 
-	var syncTime []byte
-	syncTime, err = ioutil.ReadAll(c.decrypt(resp.Result.SyncTime))
-	if err != nil {
-		// TODO Handle error
-		log.Fatal(err)
-	}
+	syncTime := c.decrypt(resp.Result.SyncTime)
 	resp.Result.SyncTime = string(syncTime[4:14])
 	i, err := strconv.ParseInt(resp.Result.SyncTime, 10, 32)
 	if err != nil {
@@ -205,7 +215,7 @@ func (c *Client) UserLogin(username, password string) (*responses.UserLogin, err
 	}
 	requestDataReader := bytes.NewReader(requestDataEncoded)
 	var resp responses.UserLogin
-	err = c.PandoraCall("https://", urlArgs, requestDataReader, &resp)
+	err = c.BlowfishCall("https://", urlArgs, requestDataReader, &resp)
 	if err != nil {
 		// TODO Handle error
 		return nil, err
