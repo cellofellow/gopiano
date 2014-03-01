@@ -169,13 +169,13 @@ func (c *Client) BlowfishCall(protocol string, method string, body io.Reader, da
 	return c.PandoraCall(protocol, method, encrypted, data)
 }
 
-func (c *Client) PartnerLogin() (*responses.PartnerLogin, error) {
-	requestData := requests.PartnerLogin{
+func (c *Client) AuthPartnerLogin() (*responses.AuthPartnerLogin, error) {
+	requestData := requests.AuthPartnerLogin{
 		Username:    c.description["username"],
 		Password:    c.description["password"],
 		Version:     c.description["version"],
 		DeviceModel: c.description["deviceModel"],
-		IncludeUrls: true,
+		IncludeURLs: true,
 	}
 	requestDataEncoded, err := json.Marshal(requestData)
 	if err != nil {
@@ -183,7 +183,7 @@ func (c *Client) PartnerLogin() (*responses.PartnerLogin, error) {
 		log.Fatal(err)
 	}
 	requestDataReader := bytes.NewReader(requestDataEncoded)
-	var resp responses.PartnerLogin
+	var resp responses.AuthPartnerLogin
 	err = c.PandoraCall("https://", "auth.partnerLogin", requestDataReader, &resp)
 	if err != nil {
 		// TODO Handle error
@@ -206,8 +206,8 @@ func (c *Client) PartnerLogin() (*responses.PartnerLogin, error) {
 	return &resp, nil
 }
 
-func (c *Client) UserLogin(username, password string) (*responses.UserLogin, error) {
-	requestData := requests.UserLogin{
+func (c *Client) AuthUserLogin(username, password string) (*responses.AuthUserLogin, error) {
+	requestData := requests.AuthUserLogin{
 		PartnerAuthToken: c.partnerAuthToken,
 		LoginType:        "user",
 		Username:         username,
@@ -220,7 +220,7 @@ func (c *Client) UserLogin(username, password string) (*responses.UserLogin, err
 		log.Fatal(err)
 	}
 	requestDataReader := bytes.NewReader(requestDataEncoded)
-	var resp responses.UserLogin
+	var resp responses.AuthUserLogin
 	err = c.BlowfishCall("https://", "auth.userLogin", requestDataReader, &resp)
 	if err != nil {
 		// TODO Handle error
