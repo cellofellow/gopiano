@@ -63,8 +63,13 @@ func Test_UserGetStationList_1(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	for _, s := range response.Result.Stations {
-		t.Logf("%+v\n", s.DateCreated)
-		t.Logf("%+v\n", s.DateCreated.GetDate())
+	t.Logf("%+v\n", response)
+}
+
+func Test_UserGetStationListChecksum_1(t *testing.T) {
+	response, err := client.UserGetStationListChecksum()
+	if err != nil {
+		t.Error(err)
 	}
+	t.Logf("%+v\n", response)
 }
