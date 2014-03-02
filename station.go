@@ -293,3 +293,27 @@ func (c *Client) StationTransformSharedStation(stationToken string) (*responses.
 	}
 	return &resp, nil
 }
+
+// Client.ExplainTrack retrieves an incomplete list of attributes assigned specified son by the
+// Music Genome Project
+// Calls API method "track.explainTrack"
+func (c *Client) ExplainTrack(trackToken string) (*responses.ExplainTrack, error) {
+	// Yeah yeah, I know this isn't a Station method it's a Track method. But there's only one.
+	requestData := requests.ExplainTrack{
+		TrackToken: trackToken,
+		UserAgentToken: c.userAgentToken,
+		SyncTime: c.GetSyncTime(),
+	}
+	requestDataEncoded, err := json.Marshal(requestData)
+	if err != nil {
+		return err
+	}
+	requestDataReader := bytes.NewReader(requestDataEncoded)
+
+	var resp responses.ExplainTrack
+	err = c.BlowfishCall("http://", "track.explainTrack", requestDataReader, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}

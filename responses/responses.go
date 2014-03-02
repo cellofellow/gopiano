@@ -254,7 +254,7 @@ type StationGetPlaylist struct {
 	} `json:"result"`
 }
 
-type TrackExplainTrack struct {
+type ExplainTrack struct {
 	Result struct {
 		Explanations []struct {
 			FocustTraitName string `json:"focusTraitName"`

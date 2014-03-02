@@ -156,7 +156,7 @@ type StationTransformSharedStation struct {
 	UserAuthToken string `json:"userAuthToken"`
 }
 
-type TrackExplainTrack struct {
+type ExplainTrack struct {
 	TrackToken    string `json:"trackToken"`
 	SyncTime      int    `json:"syncTime"`
 	UserAuthToken string `json:"userAuthToken"`
