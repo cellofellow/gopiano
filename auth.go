@@ -54,7 +54,7 @@ func (c *Client) AuthUserLogin(username, password string) (*responses.AuthUserLo
 		LoginType:        "user",
 		Username:         username,
 		Password:         password,
-		SyncTime:         int(time.Now().Add(c.timeOffset).Unix()),
+		SyncTime:         c.GetSyncTime(),
 	}
 	requestDataEncoded, err := json.Marshal(requestData)
 	if err != nil {

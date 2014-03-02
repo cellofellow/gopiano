@@ -101,10 +101,10 @@ func (c *Client) PandoraCall(protocol string, method string, body io.Reader, dat
 	if c.userID != "" {
 		urlArgs.Add("user_id", c.userID)
 	}
-	if c.userAuthToken != "" && c.partnerAuthToken == "" {
-		urlArgs.Add("auth_token", c.userAuthToken)
-	} else if c.partnerAuthToken != "" && c.userAuthToken == "" {
+	if c.partnerAuthToken != "" && c.userAuthToken == "" {
 		urlArgs.Add("auth_token", c.partnerAuthToken)
+	} else if c.userAuthToken != "" {
+		urlArgs.Add("auth_token", c.userAuthToken)
 	}
 	callUrl := protocol + c.description["baseUrl"] + "?" + urlArgs.Encode()
 
@@ -166,4 +166,8 @@ func (c *Client) BlowfishCall(protocol string, method string, body io.Reader, da
 	}
 	encrypted := strings.NewReader(c.encrypt(string(bodyBytes)))
 	return c.PandoraCall(protocol, method, encrypted, data)
+}
+
+func (c *Client) GetSyncTime () int {
+	return int(time.Now().Add(c.timeOffset).Unix())
 }

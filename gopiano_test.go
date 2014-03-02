@@ -41,3 +41,11 @@ func Test_AuthUserLogin_1(t *testing.T) {
 	}
 	t.Logf("%+v\n", response)
 }
+
+func Test_UserCanSubscribe_1(t *testing.T) {
+	response, err := client.UserCanSubscribe()
+	if err != nil {
+		t.Error(err)
+	}
+	t.Logf("%+v\n", response)
+}

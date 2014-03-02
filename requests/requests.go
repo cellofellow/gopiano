@@ -24,18 +24,13 @@ type AuthUserLogin struct {
 	ReturnStationList             bool   `json:"returnStationList,omitempty"`
 }
 
-type userNameGeneric struct {
-	SyncTime int    `json:"syncTime"`
-	Username string `json:"username"`
-}
-type UserCanSubscribe userNameGeneric
-
 type userTokenGeneric struct {
 	SyncTime      int    `json:"syncTime"`
 	UserAuthToken string `json:"userAuthToken"`
 }
 type UserGetBookmarks userTokenGeneric
 type UserGetStationListChecksum userTokenGeneric
+type UserCanSubscribe userTokenGeneric
 
 type UserCreateUser struct {
 	AccountType      string `json:"accountType"`
