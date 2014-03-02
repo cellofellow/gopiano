@@ -63,3 +63,40 @@ func (c *Client) UserCreateUser(username, password, gender, countryCode string, 
 
 	return &resp, nil
 }
+
+func (c *Client) UserEmailPassword(username string) error {
+	requestData := requests.UserEmailPassword{
+		Username:         username,
+		PartnerAuthToken: c.partnerAuthToken,
+		SyncTime:         c.GetSyncTime(),
+	}
+	requestDataEncoded, err := json.Marshal(requestData)
+	if err != nil {
+		// TODO Handle error
+		log.Fatal(err)
+	}
+	requestDataReader := bytes.NewReader(requestDataEncoded)
+	var resp interface{}
+	return c.BlowfishCall("https://", "user.emailPassword", requestDataReader, &resp)
+}
+
+func (c *Client) UserGetBookmarks() (*responses.UserGetBookmarks, error) {
+	requestData := requests.UserGetBookmarks{
+		UserAuthToken: c.userAuthToken,
+		SyncTime:      c.GetSyncTime(),
+	}
+
+	requestDataEncoded, err := json.Marshal(requestData)
+	if err != nil {
+		// TODO Handle error
+		log.Fatal(err)
+	}
+	requestDataReader := bytes.NewReader(requestDataEncoded)
+	var resp responses.UserGetBookmarks
+	err = c.BlowfishCall("http://", "user.getBookmarks", requestDataReader, &resp)
+	if err != nil {
+		// TODO Handle error
+		return nil, err
+	}
+	return &resp, nil
+}
