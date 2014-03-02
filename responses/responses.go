@@ -86,7 +86,10 @@ type artistBookmark struct {
 	DateCreated   dateResponse `json:"dateCreated"`
 	MusicToken    string       `json:"musicToken"`
 }
-type BookmarkAddArtistBookmark artistBookmark
+
+type BookmarkAddArtistBookmark struct {
+	Result artistBookmark `json:"result"`
+}
 
 type songBookmark struct {
 	AlbumName     string       `json:"artistName"`
@@ -99,7 +102,10 @@ type songBookmark struct {
 	SampleURL     string       `json:"sampleUrl"`
 	SongName      string       `json:"songName"`
 }
-type BookmarkAddSongBookmark songBookmark
+
+type BookmarkAddSongBookmark struct {
+	Result songBookmark `json:"result"`
+}
 
 type station struct {
 	SuppressVideoAds bool         `json:"suppressVideoAds"`
