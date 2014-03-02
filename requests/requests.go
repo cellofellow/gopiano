@@ -96,14 +96,14 @@ type StationDeleteStation struct {
 type StationAddFeedback struct {
 	TrackToken    string `json:"trackToken"`
 	IsPositive    bool   `json:"isPositive"`
-	synctime      int    `json:"synctime"`
-	userauthtoken string `json:"userauthtoken"`
+	SyncTime      int    `json:"syncTime"`
+	UserAuthToken string `json:"userAuthToken"`
 }
 
 type StationDeleteFeedback struct {
 	FeedbackID    string `json:"feedbackId"`
-	synctime      int    `json:"synctime"`
-	userauthtoken string `json:"userauthtoken"`
+	SyncTime      int    `json:"syncTime"`
+	UserAuthToken string `json:"userAuthToken"`
 }
 
 type StationAddMusic struct {
