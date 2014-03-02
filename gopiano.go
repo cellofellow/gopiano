@@ -113,8 +113,7 @@ func (c *Client) PandoraCall(protocol string, method string, body io.Reader, dat
 	//debugBody := strings.NewReader(string(bodyBytes))
 	//debugRequest, err := http.NewRequest("POST", callUrl, debugBody)
 	//if err != nil {
-	//	// TODO Handle error.
-	//	log.Fatal(err)
+	//	return err
 	//}
 	//debugRequest.Header.Add("User-Agent", "pithos")
 	//debugRequest.Header.Add("Content-type", "text/plain")
@@ -123,37 +122,34 @@ func (c *Client) PandoraCall(protocol string, method string, body io.Reader, dat
 
 	req, err := http.NewRequest("POST", callUrl, body)
 	if err != nil {
-		// TODO Handle error.
-		log.Fatal(err)
+		return err
 	}
 	req.Header.Add("User-Agent", "gopiano")
 	req.Header.Add("Content-type", "text/plain")
 
 	resp, err := c.http.Do(req)
 	if err != nil {
-		// TODO Handle error
-		log.Fatal(err)
+		return err
 	}
 
 	var errResp responses.ErrorResponse
 	responseBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	err = json.Unmarshal(responseBody, &errResp)
 	if err != nil {
-		// TODO Handle error
-		log.Fatal(err)
+		return err
 	}
 
 	if errResp.Stat == "fail" {
 		return errResp
 	}
 
+	log.Printf(string(responseBody))
 	err = json.Unmarshal(responseBody, &data)
 	if err != nil {
-		// TODO Handle error
-		log.Fatal(err)
+		return err
 	}
 	return nil
 }
@@ -161,8 +157,7 @@ func (c *Client) PandoraCall(protocol string, method string, body io.Reader, dat
 func (c *Client) BlowfishCall(protocol string, method string, body io.Reader, data interface{}) error {
 	bodyBytes, err := ioutil.ReadAll(body)
 	if err != nil {
-		// TODO Handle error
-		log.Fatal(err)
+		return err
 	}
 	encrypted := strings.NewReader(c.encrypt(string(bodyBytes)))
 	return c.PandoraCall(protocol, method, encrypted, data)

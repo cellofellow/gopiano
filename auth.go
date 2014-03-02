@@ -3,7 +3,6 @@ package gopiano
 import (
 	"bytes"
 	"encoding/json"
-	"log"
 	"strconv"
 	"time"
 
@@ -21,8 +20,7 @@ func (c *Client) AuthPartnerLogin() (*responses.AuthPartnerLogin, error) {
 	}
 	requestDataEncoded, err := json.Marshal(requestData)
 	if err != nil {
-		// TODO Handle error
-		log.Fatal(err)
+		return nil, err
 	}
 	requestDataReader := bytes.NewReader(requestDataEncoded)
 	var resp responses.AuthPartnerLogin
@@ -36,8 +34,7 @@ func (c *Client) AuthPartnerLogin() (*responses.AuthPartnerLogin, error) {
 	resp.Result.SyncTime = string(syncTime[4:14])
 	i, err := strconv.ParseInt(resp.Result.SyncTime, 10, 32)
 	if err != nil {
-		// TODO Handle error
-		log.Fatal(err)
+		return nil, err
 	}
 
 	// Set partner data onto client for later use.
@@ -58,8 +55,7 @@ func (c *Client) AuthUserLogin(username, password string) (*responses.AuthUserLo
 	}
 	requestDataEncoded, err := json.Marshal(requestData)
 	if err != nil {
-		// TODO Handle error
-		log.Fatal(err)
+		return nil, err
 	}
 	requestDataReader := bytes.NewReader(requestDataEncoded)
 	var resp responses.AuthUserLogin

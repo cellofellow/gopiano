@@ -3,7 +3,6 @@ package gopiano
 import (
 	"bytes"
 	"encoding/json"
-	"log"
 
 	"github.com/cellofellow/gopiano/requests"
 	"github.com/cellofellow/gopiano/responses"
@@ -16,14 +15,12 @@ func (c *Client) UserCanSubscribe() (*responses.UserCanSubscribe, error) {
 	}
 	requestDataEncoded, err := json.Marshal(requestData)
 	if err != nil {
-		// TODO Handle error
-		log.Fatal(err)
+		return nil, err
 	}
 	requestDataReader := bytes.NewReader(requestDataEncoded)
 	var resp responses.UserCanSubscribe
 	err = c.BlowfishCall("http://", "user.canSubscribe", requestDataReader, &resp)
 	if err != nil {
-		// TODO Handle error
 		return nil, err
 	}
 
@@ -46,14 +43,12 @@ func (c *Client) UserCreateUser(username, password, gender, countryCode string, 
 	}
 	requestDataEncoded, err := json.Marshal(requestData)
 	if err != nil {
-		// TODO Handle error
-		log.Fatal(err)
+		return nil,  err
 	}
 	requestDataReader := bytes.NewReader(requestDataEncoded)
 	var resp responses.UserCreateUser
 	err = c.BlowfishCall("https://", "user.createUser", requestDataReader, &resp)
 	if err != nil {
-		// TODO Handle error
 		return nil, err
 	}
 
@@ -72,8 +67,7 @@ func (c *Client) UserEmailPassword(username string) error {
 	}
 	requestDataEncoded, err := json.Marshal(requestData)
 	if err != nil {
-		// TODO Handle error
-		log.Fatal(err)
+		return err
 	}
 	requestDataReader := bytes.NewReader(requestDataEncoded)
 	var resp interface{}
@@ -88,14 +82,33 @@ func (c *Client) UserGetBookmarks() (*responses.UserGetBookmarks, error) {
 
 	requestDataEncoded, err := json.Marshal(requestData)
 	if err != nil {
-		// TODO Handle error
-		log.Fatal(err)
+		return nil, err
 	}
 	requestDataReader := bytes.NewReader(requestDataEncoded)
 	var resp responses.UserGetBookmarks
 	err = c.BlowfishCall("http://", "user.getBookmarks", requestDataReader, &resp)
 	if err != nil {
-		// TODO Handle error
+		return nil, err
+	}
+	return &resp, nil
+}
+
+func (c *Client) UserGetStationList(includeStationArtURL bool) (*responses.UserGetStationList, error) {
+	requestData := requests.UserGetStationList{
+		UserAuthToken: c.userAuthToken,
+		SyncTime:      c.GetSyncTime(),
+		IncludeStationArtURL: includeStationArtURL,
+	}
+
+	requestDataEncoded, err := json.Marshal(requestData)
+	if err != nil {
+		return nil, err
+	}
+	requestDataReader := bytes.NewReader(requestDataEncoded)
+
+	var resp responses.UserGetStationList
+	err = c.BlowfishCall("http://", "user.getStationList", requestDataReader, &resp)
+	if err != nil {
 		return nil, err
 	}
 	return &resp, nil

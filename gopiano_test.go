@@ -57,3 +57,14 @@ func Test_UserBetBookmarks_1(t *testing.T) {
 	}
 	t.Logf("%+v\n", response)
 }
+
+func Test_UserGetStationList_1(t *testing.T) {
+	response, err := client.UserGetStationList(true)
+	if err != nil {
+		t.Error(err)
+	}
+	for _, s := range response.Result.Stations {
+		t.Logf("%+v\n", s.DateCreated)
+		t.Logf("%+v\n", s.DateCreated.GetDate())
+	}
+}

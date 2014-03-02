@@ -14,21 +14,21 @@ func (e ErrorResponse) Error() string {
 }
 
 type dateResponse struct {
-	nanos          int
-	seconds        int
-	year           int
-	month          int
-	hours          int
-	time           int
-	date           int
-	minutes        int
-	day            int
-	timezoneOffset int
+	Nanos          int `json:"nano"`
+	Seconds        int `json:"seconds"`
+	Year           int `json:"year"`
+	Month          int `json:"month"`
+	Hours          int `json:"hours"`
+	Time           int `json:"time"`
+	Date           int `json:"date"`
+	Minutes        int `json:"minutes"`
+	Day            int `json:"day"`
+	TimezoneOffset int `json:"timezoneOffset"`
 }
 
-func (d dateResponse) Date() time.Time {
-	return time.Date(d.year, time.Month(d.month), d.date, d.hours, d.minutes, d.seconds,
-		d.nanos, time.FixedZone("Local Time", d.timezoneOffset*60))
+func (d dateResponse) GetDate() time.Time {
+	return time.Date(1900 + d.Year, time.Month(d.Month), d.Date, d.Hours, d.Minutes, d.Seconds,
+		d.Nanos, time.FixedZone("Local Time", d.TimezoneOffset*60))
 }
 
 type AuthPartnerLogin struct {
