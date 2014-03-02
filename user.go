@@ -146,7 +146,7 @@ func (c *Client) UserSetQuickMix(stationIDs []string) error {
 	}
 	requestDataReader := bytes.NewReader(requestDataEncoded)
 	var resp interface{}
-	return c.BlowfishCall("https://", "user.setQuickMix", requestDataReader, &resp)
+	return c.BlowfishCall("https://", "user.emailPassword", requestDataReader, &resp)
 }
 
 func (c *Client) UserSleepSong(trackToken string) error {
@@ -161,5 +161,5 @@ func (c *Client) UserSleepSong(trackToken string) error {
 	}
 	requestDataReader := bytes.NewReader(requestDataEncoded)
 	var resp interface{}
-	return c.BlowfishCall("https://", "user.sleepSong", requestDataReader, &resp)
+	return c.BlowfishCall("https://", "user.emailPassword", requestDataReader, &resp)
 }
