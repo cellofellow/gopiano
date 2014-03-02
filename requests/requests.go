@@ -122,21 +122,8 @@ type StationDeleteMusic struct {
 type StationGetGenreStations userTokenGeneric
 type StationGetGenreStationsChecksum userTokenGeneric
 
-type audioFormat string
-
-const AAC_40 audioFormat = "HTTP_40_AAC_MONO"
-const AAC_64 audioFormat = "HTTP_64_AAC"
-const AACPLUS_32 audioFormat = "HTTP_32_AACPLUS"
-const AACPLUS_64 audioFormat = "HTTP_64_AACPLUS"
-const AACPLUS_ADTS_24 audioFormat = "HTTP_24_AACPLUS_ADTS"
-const AACPLUS_ADTS_32 audioFormat = "HTTP_32_AACPLUS_ADTS"
-const AACPLUS_ADTS_64 audioFormat = "HTTP_64_AACPLUS_ADTS"
-const MP3_128 audioFormat = "HTTP_128_MP3"
-const WMA_32 audioFormat = "WMA_32"
-
 type StationGetPlaylist struct {
 	StationToken       string        `json:"stationToken"`
-	AdditionalAudioURL []audioFormat `json:"additionalAudioUrl,omitempty"`
 	SyncTime           int           `json:"syncTime"`
 	UserAuthToken      string        `json:"userAuthToken"`
 }

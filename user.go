@@ -151,9 +151,9 @@ func (c *Client) UserSetQuickMix(stationIDs []string) error {
 
 func (c *Client) UserSleepSong(trackToken string) error {
 	requestData := requests.UserSleepSong{
-		TrackToken: trackToken,
-		UserAuthToken:      c.userAuthToken,
-		SyncTime:           c.GetSyncTime(),
+		TrackToken:    trackToken,
+		UserAuthToken: c.userAuthToken,
+		SyncTime:      c.GetSyncTime(),
 	}
 	requestDataEncoded, err := json.Marshal(requestData)
 	if err != nil {

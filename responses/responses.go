@@ -236,7 +236,6 @@ type StationGetPlaylist struct {
 				Protocol string `json:"protocol"`
 			} `json:"audioUrlMap"`
 			ITunesSongURL          string   `json:"itunesSongUrl"`
-			AdditionalAudioURL     []string `json:"additionalAudioUrl,omitempty"` // FIXME This can also be just a single string.
 			AmazonAlbumAsin        string   `json:"amazonAlbumAsin"`
 			AmazonAlbumDigitalAsin string   `json:"amazonAlbumDigitalAsin"`
 			ArtistExplorerURL      string   `json:"artistExplorerUrl"`

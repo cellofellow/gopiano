@@ -163,6 +163,6 @@ func (c *Client) BlowfishCall(protocol string, method string, body io.Reader, da
 	return c.PandoraCall(protocol, method, encrypted, data)
 }
 
-func (c *Client) GetSyncTime () int {
+func (c *Client) GetSyncTime() int {
 	return int(time.Now().Add(c.timeOffset).Unix())
 }
