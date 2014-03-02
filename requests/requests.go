@@ -1,3 +1,6 @@
+/*
+Structs for use with json.Marshal when sending requests to the Pandora API.
+*/
 package requests
 
 type AuthPartnerLogin struct {
@@ -130,7 +133,7 @@ type StationGetPlaylist struct {
 
 type StationGetStation struct {
 	StationToken              string `json:"stationToken"`
-	IncludeExtendedAttributes string `json:"includeExtendedAttributes,omitempty"`
+	IncludeExtendedAttributes bool   `json:"includeExtendedAttributes,omitempty"`
 	SyncTime                  int    `json:"syncTime"`
 	UserAuthToken             string `json:"userAuthToken"`
 }

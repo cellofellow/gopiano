@@ -1,3 +1,6 @@
+/*
+Structs used with json.Unmarshal in processing responses from the Pandora API.
+*/
 package responses
 
 import "fmt"
@@ -13,7 +16,11 @@ func (e ErrorResponse) Error() string {
 	return fmt.Sprintf("Pandora Error: %d %s", e.Code, e.Message)
 }
 
-type dateResponse struct {
+// DateResponse is used repeatedly in places where Pandora returns a JSON object
+// called dateCreated.
+// Most of the data is rubish without a little processing but you can use GetDate()
+// and also Time is just a nice UNIX epoch.
+type DateResponse struct {
 	Nanos          int `json:"nano"`
 	Seconds        int `json:"seconds"`
 	Year           int `json:"year"`
@@ -26,7 +33,8 @@ type dateResponse struct {
 	TimezoneOffset int `json:"timezoneOffset"`
 }
 
-func (d dateResponse) GetDate() time.Time {
+// Get this mess of ints as a time.Time object. Much nicer.
+func (d DateResponse) GetDate() time.Time {
 	return time.Date(1900 + d.Year, time.Month(d.Month), d.Date, d.Hours, d.Minutes, d.Seconds,
 		d.Nanos, time.FixedZone("Local Time", d.TimezoneOffset*60))
 }
@@ -79,24 +87,24 @@ type UserCanSubscribe struct {
 
 type UserCreateUser AuthUserLogin
 
-type artistBookmark struct {
+type ArtistBookmark struct {
 	ArtURL        string       `json:"artUrl"`
 	ArtistName    string       `json:"artistName"`
 	BookmarkToken string       `json:"bookmarkToken"`
-	DateCreated   dateResponse `json:"dateCreated"`
+	DateCreated   DateResponse `json:"dateCreated"`
 	MusicToken    string       `json:"musicToken"`
 }
 
 type BookmarkAddArtistBookmark struct {
-	Result artistBookmark `json:"result"`
+	Result ArtistBookmark `json:"result"`
 }
 
-type songBookmark struct {
+type SongBookmark struct {
 	AlbumName     string       `json:"artistName"`
 	ArtURL        string       `json:"artUrl"`
 	ArtistName    string       `json:"artistName"`
 	BookmarkToken string       `json:"bookmarkToken"`
-	DateCreated   dateResponse `json:"dateCreated"`
+	DateCreated   DateResponse `json:"dateCreated"`
 	MusicToken    string       `json:"musicToken"`
 	SampleGain    string       `json:"sampleGain"`
 	SampleURL     string       `json:"sampleUrl"`
@@ -104,14 +112,14 @@ type songBookmark struct {
 }
 
 type BookmarkAddSongBookmark struct {
-	Result songBookmark `json:"result"`
+	Result SongBookmark `json:"result"`
 }
 
-type station struct {
+type Station struct {
 	SuppressVideoAds bool         `json:"suppressVideoAds"`
 	StationID        string       `json:"stationId"`
 	AllowAddMusic    bool         `json:"allowAddMusic"`
-	DateCreated      dateResponse `json:"dateCreated"`
+	DateCreated      DateResponse `json:"dateCreated"`
 	StationDetailURL string       `json:"stationDetailUrl"`
 	ArtURL           string       `json:"artUrl"`
 	RequiresCleanAds bool         `json:"requiresCleanAds"`
@@ -122,12 +130,12 @@ type station struct {
 			SeedID      string       `json:"seedId"`
 			ArtistName  string       `json:"artistName"`
 			SongName    string       `json:"songName"`
-			DateCreated dateResponse `json:"dateCreated"`
+			DateCreated DateResponse `json:"dateCreated"`
 		} `json:"songs"`
 		Artists []struct {
 			SeedID      string       `json:"seedId"`
 			ArtistName  string       `json:"artistName"`
-			DateCreated dateResponse `json:"dateCreated"`
+			DateCreated DateResponse `json:"dateCreated"`
 		} `json:"songs"`
 	} `json:"music"`
 	IsShared          bool     `json:"isShared"`
@@ -137,31 +145,30 @@ type station struct {
 	AllowRename       bool     `json:"allowRename"`
 	StationSharingURL string   `json:"stationSharingUrl"`
 	Feedback          struct {
-		ThumbsDown []feedbackResponse `json:"thumsDown"`
-		ThumbsUp   []feedbackResponse `json:"thumbsUp"`
+		ThumbsDown []FeedbackResponse `json:"thumsDown"`
+		ThumbsUp   []FeedbackResponse `json:"thumbsUp"`
 	} `json:"feedback"`
 }
 
 type UserGetBookmarks struct {
 	Result struct {
-		Artists []artistBookmark `json:"artists"`
-		Songs   []songBookmark   `json:"songs"`
+		Artists []ArtistBookmark `json:"artists"`
+		Songs   []SongBookmark   `json:"songs"`
 	} `json:"result"`
 }
 
 type UserGetStationList struct {
 	Result struct {
-		Stations []station `json:"stations"`
+		Stations []Station `json:"stations"`
 		Checksum string    `json:"checksum"`
 	} `json:"result"`
 }
 
-type checksumResponse struct {
+type UserGetStationListChecksum  struct {
 	Result struct {
 		Checksum string `json:"checksum"`
 	} `json:"result"`
 }
-type UserGetStationListChecksum checksumResponse
 
 type MusicSearch struct {
 	Result struct {
@@ -182,33 +189,33 @@ type MusicSearch struct {
 	} `json:"result"`
 }
 
-type feedbackResponse struct {
+type FeedbackResponse struct {
 	ArtistName  string       `json:"artistName"`
 	SongName    string       `json:"songName"`
-	DateCreated dateResponse `json:"dateCreated"`
+	DateCreated DateResponse `json:"dateCreated"`
 	FeedbackID  string       `json:"feedbackId"`
 	IsPositive  int          `json:"isPositive"`
 }
 
 type StationAddFeedback struct {
-	Result feedbackResponse `json:"result"`
+	Result FeedbackResponse `json:"result"`
 }
 
 type StationAddMusic struct {
 	Result struct {
 		ArtistName  string       `json:"artistName"`
-		DateCreated dateResponse `json:"dateCreated"`
+		DateCreated DateResponse `json:"dateCreated"`
 		SeedID      string       `json:"seedId"`
 	} `json:"result"`
 }
 
-type stationResponse struct {
-	Result station `json:"result"`
+type StationResponse struct {
+	Result Station `json:"result"`
 }
-type StationCreateStation stationResponse
-type StationGetStation stationResponse
-type StationRenameStation stationResponse
-type StationTransformSharedStation stationResponse
+type StationCreateStation StationResponse
+type StationGetStation StationResponse
+type StationRenameStation StationResponse
+type StationTransformSharedStation StationResponse
 
 type StationGetGenreStations struct {
 	Result struct {

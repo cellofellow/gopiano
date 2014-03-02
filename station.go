@@ -40,7 +40,7 @@ func (c *Client) StationAddFeedback(trackToken string, isPositive bool) (*respon
 func (c *Client) StationAddMusic(musicToken, stationToken string) (*responses.StationAddMusic, error) {
 	requestData := requests.StationAddMusic{
 		MusicToken:    musicToken,
-		StationToke:   stationToken,
+		StationToken:  stationToken,
 		UserAuthToken: c.userAuthToken,
 		SyncTime:      c.GetSyncTime(),
 	}
@@ -63,7 +63,7 @@ func (c *Client) StationAddMusic(musicToken, stationToken string) (*responses.St
 // Argument musicType is either "song" or "artist" specifying the type of track being used.
 // Calls API method "station.createStation"
 func (c *Client) StationCreateStationTrack(trackToken, musicType string) (*responses.StationCreateStation, error) {
-	resquestData := requests.StationCreatStation{
+	requestData := requests.StationCreateStation{
 		TrackToken:    trackToken,
 		MusicType:     musicType,
 		UserAuthToken: c.userAuthToken,
@@ -87,7 +87,7 @@ func (c *Client) StationCreateStationTrack(trackToken, musicType string) (*respo
 // Argument musicToken is obtained from Client.MusicSearch.
 // Calls API method "station.createStation"
 func (c *Client) StationCreateStationMusic(musicToken string) (*responses.StationCreateStation, error) {
-	resquestData := requests.StationCreatStation{
+	requestData := requests.StationCreateStation{
 		MusicToken:    musicToken,
 		UserAuthToken: c.userAuthToken,
 		SyncTime:      c.GetSyncTime(),
@@ -125,7 +125,7 @@ func (c *Client) StationDeleteFeedback(feedbackID string) error {
 
 // Client.StationDeleteMusic removes seed music identified by a seedID from a station.
 // Calls API method "station.deleteMusic"
-func (c *Client) StationDeleteFeedback(seedID string) error {
+func (c *Client) StationDeleteMusic(seedID string) error {
 	requestData := requests.StationDeleteMusic{
 		SeedID:        seedID,
 		UserAuthToken: c.userAuthToken,
@@ -166,7 +166,7 @@ func (c *Client) StationGetGenreStations() (*responses.StationGetGenreStations, 
 	}
 	requestDataEncoded, err := json.Marshal(requestData)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	requestDataReader := bytes.NewReader(requestDataEncoded)
 
@@ -190,7 +190,7 @@ func (c *Client) StationGetPlaylist(stationToken string) (*responses.StationGetP
 	}
 	requestDataEncoded, err := json.Marshal(requestData)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	requestDataReader := bytes.NewReader(requestDataEncoded)
 
@@ -215,7 +215,7 @@ func (c *Client) StationGetStation(stationToken string, includeExtendedAttribute
 	}
 	requestDataEncoded, err := json.Marshal(requestData)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	requestDataReader := bytes.NewReader(requestDataEncoded)
 
@@ -260,7 +260,7 @@ func (c *Client) StationRenameStation(stationToken, stationName string) (*respon
 	}
 	requestDataEncoded, err := json.Marshal(requestData)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	requestDataReader := bytes.NewReader(requestDataEncoded)
 
@@ -277,12 +277,12 @@ func (c *Client) StationRenameStation(stationToken, stationName string) (*respon
 func (c *Client) StationTransformSharedStation(stationToken string) (*responses.StationTransformSharedStation, error) {
 	requestData := requests.StationTransformSharedStation{
 		StationToken:   stationToken,
-		UserAgentToken: c.userAgentToken,
+		UserAuthToken:  c.userAuthToken,
 		SyncTime:       c.GetSyncTime(),
 	}
 	requestDataEncoded, err := json.Marshal(requestData)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	requestDataReader := bytes.NewReader(requestDataEncoded)
 

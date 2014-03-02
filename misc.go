@@ -13,13 +13,13 @@ import (
 // Calls API method "track.explainTrack"
 func (c *Client) ExplainTrack(trackToken string) (*responses.ExplainTrack, error) {
 	requestData := requests.ExplainTrack{
-		TrackToken:     trackToken,
-		UserAgentToken: c.userAgentToken,
-		SyncTime:       c.GetSyncTime(),
+		TrackToken:    trackToken,
+		UserAuthToken: c.userAuthToken,
+		SyncTime:      c.GetSyncTime(),
 	}
 	requestDataEncoded, err := json.Marshal(requestData)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	requestDataReader := bytes.NewReader(requestDataEncoded)
 
@@ -41,7 +41,7 @@ func (c *Client) MusicSearch(searchText string) (*responses.MusicSearch, error) 
 	}
 	requestDataEncoded, err := json.Marshal(requestData)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	requestDataReader := bytes.NewReader(requestDataEncoded)
 
@@ -58,13 +58,13 @@ func (c *Client) MusicSearch(searchText string) (*responses.MusicSearch, error) 
 // Calls API method "bookmark.addArtistBookmark"
 func (c *Client) BookmarkAddArtistBookmark(trackToken string) (*responses.BookmarkAddArtistBookmark, error) {
 	requestData := requests.BookmarkAddArtistBookmark{
-		SearchText:    trackToken,
+		TrackToken:    trackToken,
 		UserAuthToken: c.userAuthToken,
 		SyncTime:      c.GetSyncTime(),
 	}
 	requestDataEncoded, err := json.Marshal(requestData)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	requestDataReader := bytes.NewReader(requestDataEncoded)
 
@@ -81,13 +81,13 @@ func (c *Client) BookmarkAddArtistBookmark(trackToken string) (*responses.Bookma
 // Calls API method "bookmark.addSongBookmark"
 func (c *Client) BookmarkAddSongBookmark(trackToken string) (*responses.BookmarkAddSongBookmark, error) {
 	requestData := requests.BookmarkAddSongBookmark{
-		SearchText:    trackToken,
+		TrackToken:    trackToken,
 		UserAuthToken: c.userAuthToken,
 		SyncTime:      c.GetSyncTime(),
 	}
 	requestDataEncoded, err := json.Marshal(requestData)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	requestDataReader := bytes.NewReader(requestDataEncoded)
 

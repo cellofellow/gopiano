@@ -1,3 +1,15 @@
+/*
+Package gopiano provides a thin wrapper library around the Pandora.com client API.
+
+This client API has been reverse engineered and documentation is available at
+http://pan-do-ra-api.wikia.com/wiki/Json/5.
+
+The package provides a Client struct with a myriad of methods which interact with the
+Pandora JSON API's own methods. Each method returns a struct of the parsed JSON data and an error.
+All of the responses that these methods return can be found in the responses subpackage. There
+is also a requests subpackage but mostly you don't need to bother with those; they get instantiated
+by these client methods.
+*/
 package gopiano
 
 import (
@@ -5,7 +17,6 @@ import (
 	"encoding/json"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -16,8 +27,10 @@ import (
 	"github.com/cellofellow/gopiano/responses"
 )
 
+// Describes a particular type of client to emulate.
 type ClientDescription map[string]string
 
+// The data for the Android client.
 var AndroidClient = ClientDescription{
 	"deviceModel": "android-generic",
 	"username":    "android",
@@ -28,6 +41,7 @@ var AndroidClient = ClientDescription{
 	"version":     "5",
 }
 
+// Class for a Client object.
 type Client struct {
 	description      ClientDescription
 	http             *http.Client
@@ -40,26 +54,28 @@ type Client struct {
 	userID           string
 }
 
-func NewClient(d ClientDescription) *Client {
+// Create a new Client with specified ClientDescription
+func NewClient(d ClientDescription) (*Client, error){
 	client := &http.Client{}
 	encrypter, err := blowfish.NewCipher([]byte(d["encryptKey"]))
 	if err != nil {
-		// TODO Handle error
-		log.Fatal(err)
+		return nil, err
 	}
 	decrypter, err := blowfish.NewCipher([]byte(d["decryptKey"]))
 	if err != nil {
-		// TODO Handle error
-		log.Fatal(err)
+		return nil, err
 	}
 	return &Client{
 		description: d,
 		http:        client,
 		encrypter:   encrypter,
 		decrypter:   decrypter,
-	}
+	}, nil
 }
 
+// Blowfish encrypts a string in ECB mode.
+// Many methods of the Pandora API take their JSON data as Blowfish encrypted data.
+// The key for the encryption is provided by the ClientDescription.
 func (c *Client) encrypt(data string) string {
 	chunks := make([]string, 0)
 	for i := 0; i < len(data); i += 8 {
@@ -73,7 +89,10 @@ func (c *Client) encrypt(data string) string {
 	return strings.Join(chunks, "")
 }
 
-func (c *Client) decrypt(data string) string {
+// Blowfish decrypts a string in ECB mode.
+// Some data returned from the Pandora API is encrypted. This decrypts it.
+// The key for the decryption is provided by the ClientDescription.
+func (c *Client) decrypt(data string) (string, error) {
 	chunks := make([]string, 0)
 	for i := 0; i < len(data); i += 16 {
 		var buf [16]byte
@@ -81,15 +100,19 @@ func (c *Client) decrypt(data string) string {
 		copy(buf[:], data[i:])
 		_, err := hex.Decode(decoded[:], buf[:])
 		if err != nil {
-			// TODO Handle error
-			log.Fatal(err)
+			return "", err
 		}
 		c.decrypter.Decrypt(decrypted[:], decoded[:])
 		chunks = append(chunks, strings.Trim(string(decrypted[:]), "\x00"))
 	}
-	return strings.Join(chunks, "")
+	return strings.Join(chunks, ""), nil
 }
 
+// Client.PandoraCall is the basic function to send an HTTP POST to pandora.com.
+// Arguments: protocol is either "https://" or "http://", method is whatever must be in
+// the "method" url argument and specifies the remote procedure to call, body is an io.Reader
+// to be passed directly into http.Post, and data is to be passed to json.Unmarshal to parse
+// the JSON response.
 func (c *Client) PandoraCall(protocol string, method string, body io.Reader, data interface{}) error {
 	urlArgs := url.Values{
 		"method": {method},
@@ -108,17 +131,20 @@ func (c *Client) PandoraCall(protocol string, method string, body io.Reader, dat
 	}
 	callUrl := protocol + c.description["baseUrl"] + "?" + urlArgs.Encode()
 
-	//// Clone of actual request for debugging.
-	//bodyBytes, err := ioutil.ReadAll(body)
-	//debugBody := strings.NewReader(string(bodyBytes))
-	//debugRequest, err := http.NewRequest("POST", callUrl, debugBody)
-	//if err != nil {
-	//	return err
-	//}
-	//debugRequest.Header.Add("User-Agent", "pithos")
-	//debugRequest.Header.Add("Content-type", "text/plain")
-	//debugRequest.Write(os.Stderr)
-	//body = strings.NewReader(string(bodyBytes))
+	/*
+	// Clone of actual request for debugging.
+	// Be sure to import os when you uncomment this.
+	bodyBytes, err := ioutil.ReadAll(body)
+	debugBody := strings.NewReader(string(bodyBytes))
+	debugRequest, err := http.NewRequest("POST", callUrl, debugBody)
+	if err != nil {
+		return err
+	}
+	debugRequest.Header.Add("User-Agent", "pithos")
+	debugRequest.Header.Add("Content-type", "text/plain")
+	debugRequest.Write(os.Stderr)
+	body = strings.NewReader(string(bodyBytes))
+	*/
 
 	req, err := http.NewRequest("POST", callUrl, body)
 	if err != nil {
@@ -146,7 +172,6 @@ func (c *Client) PandoraCall(protocol string, method string, body io.Reader, dat
 		return errResp
 	}
 
-	log.Printf(string(responseBody))
 	err = json.Unmarshal(responseBody, &data)
 	if err != nil {
 		return err
@@ -154,6 +179,8 @@ func (c *Client) PandoraCall(protocol string, method string, body io.Reader, dat
 	return nil
 }
 
+// Client.BlowfishCall first encrypts the body before calling PandoraCall.
+// Arguments are identical to PandoraCall.
 func (c *Client) BlowfishCall(protocol string, method string, body io.Reader, data interface{}) error {
 	bodyBytes, err := ioutil.ReadAll(body)
 	if err != nil {
@@ -163,6 +190,8 @@ func (c *Client) BlowfishCall(protocol string, method string, body io.Reader, da
 	return c.PandoraCall(protocol, method, encrypted, data)
 }
 
+// Most calls require a SyncTime int argument (Unix epoch). We store our current time offset
+// but must calculate the SyncTime for each call. This method does that.
 func (c *Client) GetSyncTime() int {
 	return int(time.Now().Add(c.timeOffset).Unix())
 }
