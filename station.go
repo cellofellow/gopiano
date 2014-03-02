@@ -276,9 +276,9 @@ func (c *Client) StationRenameStation(stationToken, stationName string) (*respon
 // Calls API method "station.transformSharedStation"
 func (c *Client) StationTransformSharedStation(stationToken string) (*responses.StationTransformSharedStation, error) {
 	requestData := requests.StationTransformSharedStation{
-		StationToken: stationToken,
+		StationToken:   stationToken,
 		UserAgentToken: c.userAgentToken,
-		SyncTime: c.GetSyncTime(),
+		SyncTime:       c.GetSyncTime(),
 	}
 	requestDataEncoded, err := json.Marshal(requestData)
 	if err != nil {
@@ -293,4 +293,3 @@ func (c *Client) StationTransformSharedStation(stationToken string) (*responses.
 	}
 	return &resp, nil
 }
-
