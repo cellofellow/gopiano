@@ -43,7 +43,7 @@ func (c *Client) UserCreateUser(username, password, gender, countryCode string, 
 	}
 	requestDataEncoded, err := json.Marshal(requestData)
 	if err != nil {
-		return nil,  err
+		return nil, err
 	}
 	requestDataReader := bytes.NewReader(requestDataEncoded)
 	var resp responses.UserCreateUser
@@ -95,8 +95,8 @@ func (c *Client) UserGetBookmarks() (*responses.UserGetBookmarks, error) {
 
 func (c *Client) UserGetStationList(includeStationArtURL bool) (*responses.UserGetStationList, error) {
 	requestData := requests.UserGetStationList{
-		UserAuthToken: c.userAuthToken,
-		SyncTime:      c.GetSyncTime(),
+		UserAuthToken:        c.userAuthToken,
+		SyncTime:             c.GetSyncTime(),
 		IncludeStationArtURL: includeStationArtURL,
 	}
 
@@ -112,4 +112,54 @@ func (c *Client) UserGetStationList(includeStationArtURL bool) (*responses.UserG
 		return nil, err
 	}
 	return &resp, nil
+}
+
+func (c *Client) UserGetStationListChecksum() (*responses.UserGetStationListChecksum, error) {
+	requestData := requests.UserGetStationListChecksum{
+		UserAuthToken: c.userAuthToken,
+		SyncTime:      c.GetSyncTime(),
+	}
+
+	requestDataEncoded, err := json.Marshal(requestData)
+	if err != nil {
+		return nil, err
+	}
+	requestDataReader := bytes.NewReader(requestDataEncoded)
+
+	var resp responses.UserGetStationListChecksum
+	err = c.BlowfishCall("http://", "user.getStationListChecksum", requestDataReader, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+func (c *Client) UserSetQuickMix(stationIDs []string) error {
+	requestData := requests.UserSetQuickMix{
+		QuickMixStationIDs: stationIDs,
+		UserAuthToken:      c.userAuthToken,
+		SyncTime:           c.GetSyncTime(),
+	}
+	requestDataEncoded, err := json.Marshal(requestData)
+	if err != nil {
+		return err
+	}
+	requestDataReader := bytes.NewReader(requestDataEncoded)
+	var resp interface{}
+	return c.BlowfishCall("https://", "user.setQuickMix", requestDataReader, &resp)
+}
+
+func (c *Client) UserSleepSong(trackToken string) error {
+	requestData := requests.UserSleepSong{
+		TrackToken: trackToken,
+		UserAuthToken:      c.userAuthToken,
+		SyncTime:           c.GetSyncTime(),
+	}
+	requestDataEncoded, err := json.Marshal(requestData)
+	if err != nil {
+		return err
+	}
+	requestDataReader := bytes.NewReader(requestDataEncoded)
+	var resp interface{}
+	return c.BlowfishCall("https://", "user.sleepSong", requestDataReader, &resp)
 }
