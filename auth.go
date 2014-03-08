@@ -16,10 +16,10 @@ import (
 // Calls API method "auth.partnerLogin"
 func (c *Client) AuthPartnerLogin() (*responses.AuthPartnerLogin, error) {
 	requestData := requests.AuthPartnerLogin{
-		Username:    c.description["username"],
-		Password:    c.description["password"],
-		Version:     c.description["version"],
-		DeviceModel: c.description["deviceModel"],
+		Username:    c.description.Username,
+		Password:    c.description.Password,
+		Version:     c.description.Version,
+		DeviceModel: c.description.DeviceModel,
 		IncludeURLs: true,
 	}
 	requestDataEncoded, err := json.Marshal(requestData)

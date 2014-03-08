@@ -28,17 +28,25 @@ import (
 )
 
 // Describes a particular type of client to emulate.
-type ClientDescription map[string]string
+type ClientDescription struct {
+	DeviceModel string
+	Username string
+	Password string
+	BaseURL string
+	EncryptKey string
+	DecryptKey string
+	Version string
+}
 
 // The data for the Android client.
-var AndroidClient = ClientDescription{
-	"deviceModel": "android-generic",
-	"username":    "android",
-	"password":    "AC7IBG09A3DTSYM4R41UJWL07VLN8JI7",
-	"baseUrl":     "tuner.pandora.com/services/json/",
-	"encryptKey":  "6#26FRL$ZWD",
-	"decryptKey":  "R=U!LH$O2B#",
-	"version":     "5",
+var AndroidClient ClientDescription = ClientDescription{
+	DeviceModel: "android-generic",
+	Username:    "android",
+	Password:    "AC7IBG09A3DTSYM4R41UJWL07VLN8JI7",
+	BaseURL:     "tuner.pandora.com/services/json/",
+	EncryptKey:  "6#26FRL$ZWD",
+	DecryptKey:  "R=U!LH$O2B#",
+	Version:     "5",
 }
 
 // Class for a Client object.
@@ -57,11 +65,11 @@ type Client struct {
 // Create a new Client with specified ClientDescription
 func NewClient(d ClientDescription) (*Client, error){
 	client := &http.Client{}
-	encrypter, err := blowfish.NewCipher([]byte(d["encryptKey"]))
+	encrypter, err := blowfish.NewCipher([]byte(d.EncryptKey))
 	if err != nil {
 		return nil, err
 	}
-	decrypter, err := blowfish.NewCipher([]byte(d["decryptKey"]))
+	decrypter, err := blowfish.NewCipher([]byte(d.DecryptKey))
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +137,7 @@ func (c *Client) PandoraCall(protocol string, method string, body io.Reader, dat
 	} else if c.userAuthToken != "" {
 		urlArgs.Add("auth_token", c.userAuthToken)
 	}
-	callUrl := protocol + c.description["baseUrl"] + "?" + urlArgs.Encode()
+	callUrl := protocol + c.description.BaseURL + "?" + urlArgs.Encode()
 
 	/*
 	// Clone of actual request for debugging.
