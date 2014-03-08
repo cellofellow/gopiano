@@ -230,7 +230,12 @@ type StationGetGenreStations struct {
 	} `json:"result"`
 }
 
-type StationGetGenreStationsChecksum checksumResponse
+type StationGetGenreStationsChecksum struct {
+	Result struct {
+		Checksum string `json:"checksum"`
+	} `json:"result"`
+}
+
 
 type StationGetPlaylist struct {
 	Result struct {
