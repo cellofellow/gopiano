@@ -64,7 +64,7 @@ type Client struct {
 
 // Create a new Client with specified ClientDescription
 func NewClient(d ClientDescription) (*Client, error){
-	client := &http.Client{}
+	client := new(http.Client)
 	encrypter, err := blowfish.NewCipher([]byte(d.EncryptKey))
 	if err != nil {
 		return nil, err
