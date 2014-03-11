@@ -139,21 +139,6 @@ func (c *Client) PandoraCall(protocol string, method string, body io.Reader, dat
 	}
 	callUrl := protocol + c.description.BaseURL + "?" + urlArgs.Encode()
 
-	/*
-	// Clone of actual request for debugging.
-	// Be sure to import os when you uncomment this.
-	bodyBytes, err := ioutil.ReadAll(body)
-	debugBody := strings.NewReader(string(bodyBytes))
-	debugRequest, err := http.NewRequest("POST", callUrl, debugBody)
-	if err != nil {
-		return err
-	}
-	debugRequest.Header.Add("User-Agent", "pithos")
-	debugRequest.Header.Add("Content-type", "text/plain")
-	debugRequest.Write(os.Stderr)
-	body = strings.NewReader(string(bodyBytes))
-	*/
-
 	req, err := http.NewRequest("POST", callUrl, body)
 	if err != nil {
 		return err
@@ -177,6 +162,9 @@ func (c *Client) PandoraCall(protocol string, method string, body io.Reader, dat
 	}
 
 	if errResp.Stat == "fail" {
+		if message, ok := responses.ErrorCodeMap[errResp.Code]; ok {
+			errResp.Message = message
+		}
 		return errResp
 	}
 
