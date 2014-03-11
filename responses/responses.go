@@ -185,16 +185,32 @@ type Station struct {
 			DateCreated DateResponse `json:"dateCreated"`
 		} `json:"songs"`
 	} `json:"music"`
-	IsShared          bool     `json:"isShared"`
-	AllowDelete       bool     `json:"allowDelete"`
-	Genre             []string `json:"genre"`
-	IsQuickMix        bool     `json:"isQuickMix"`
-	AllowRename       bool     `json:"allowRename"`
-	StationSharingURL string   `json:"stationSharingUrl"`
-	Feedback          struct {
+	IsShared           bool     `json:"isShared"`
+	AllowDelete        bool     `json:"allowDelete"`
+	Genre              []string `json:"genre"`
+	IsQuickMix         bool     `json:"isQuickMix"`
+	AllowRename        bool     `json:"allowRename"`
+	StationSharingURL  string   `json:"stationSharingUrl"`
+	QuickMixStationIDs []string `json:"quickMixStationIds"`
+	Feedback           struct {
 		ThumbsDown []FeedbackResponse `json:"thumsDown"`
 		ThumbsUp   []FeedbackResponse `json:"thumbsUp"`
 	} `json:"feedback"`
+}
+
+type StationList []Station
+
+// Make Station implement sort.Interface
+func (s StationList) Len() int {
+	return len(s)
+}
+
+func (s StationList) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+
+func (s StationList) Less(i, j int) bool {
+	return s[i].StationName < s[j].StationName
 }
 
 type UserGetBookmarks struct {
@@ -206,7 +222,7 @@ type UserGetBookmarks struct {
 
 type UserGetStationList struct {
 	Result struct {
-		Stations []Station `json:"stations"`
+		Stations StationList `json:"stations"`
 		Checksum string    `json:"checksum"`
 	} `json:"result"`
 }
