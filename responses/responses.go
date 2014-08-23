@@ -183,7 +183,7 @@ type Station struct {
 			SeedID      string       `json:"seedId"`
 			ArtistName  string       `json:"artistName"`
 			DateCreated DateResponse `json:"dateCreated"`
-		} `json:"songs"`
+		} `json:"artists"`
 	} `json:"music"`
 	IsShared           bool     `json:"isShared"`
 	AllowDelete        bool     `json:"allowDelete"`
