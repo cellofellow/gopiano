@@ -193,7 +193,7 @@ type Station struct {
 	StationSharingURL  string   `json:"stationSharingUrl"`
 	QuickMixStationIDs []string `json:"quickMixStationIds"`
 	Feedback           struct {
-		ThumbsDown []FeedbackResponse `json:"thumsDown"`
+		ThumbsDown []FeedbackResponse `json:"thumbsDown"`
 		ThumbsUp   []FeedbackResponse `json:"thumbsUp"`
 	} `json:"feedback"`
 }
@@ -223,7 +223,7 @@ type UserGetBookmarks struct {
 type UserGetStationList struct {
 	Result struct {
 		Stations StationList `json:"stations"`
-		Checksum string    `json:"checksum"`
+		Checksum string      `json:"checksum"`
 	} `json:"result"`
 }
 
@@ -257,7 +257,7 @@ type FeedbackResponse struct {
 	SongName    string       `json:"songName"`
 	DateCreated DateResponse `json:"dateCreated"`
 	FeedbackID  string       `json:"feedbackId"`
-	IsPositive  int          `json:"isPositive"`
+	IsPositive  bool         `json:"isPositive"`
 }
 
 type StationAddFeedback struct {
