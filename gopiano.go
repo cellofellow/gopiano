@@ -22,7 +22,7 @@ import (
 	"strings"
 	"time"
 
-	"code.google.com/p/go.crypto/blowfish"
+	"golang.org/x/crypto/blowfish"
 
 	"github.com/cellofellow/gopiano/responses"
 )
