@@ -171,7 +171,7 @@ func (c *Client) StationGetGenreStations() (*responses.StationGetGenreStations, 
 	requestDataReader := bytes.NewReader(requestDataEncoded)
 
 	var resp responses.StationGetGenreStations
-	err = c.BlowfishCall("http://", "station.addGetGenreStations", requestDataReader, &resp)
+	err = c.BlowfishCall("http://", "station.getGenreStations", requestDataReader, &resp)
 	if err != nil {
 		return nil, err
 	}
@@ -276,9 +276,9 @@ func (c *Client) StationRenameStation(stationToken, stationName string) (*respon
 // Calls API method "station.transformSharedStation"
 func (c *Client) StationTransformSharedStation(stationToken string) (*responses.StationTransformSharedStation, error) {
 	requestData := requests.StationTransformSharedStation{
-		StationToken:   stationToken,
-		UserAuthToken:  c.userAuthToken,
-		SyncTime:       c.GetSyncTime(),
+		StationToken:  stationToken,
+		UserAuthToken: c.userAuthToken,
+		SyncTime:      c.GetSyncTime(),
 	}
 	requestDataEncoded, err := json.Marshal(requestData)
 	if err != nil {
