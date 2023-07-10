@@ -6,7 +6,7 @@ package responses
 import "fmt"
 import "time"
 
-var ErrorCodeMap map[int]string = map[int]string{
+var ErrorCodeMap = map[int]string{
 	0:    "INTERNAL",
 	1:    "MAINTENCANCE_MODE",
 	2:    "URL_PARAM_MISSING_METHOD",
@@ -147,7 +147,7 @@ type BookmarkAddArtistBookmark struct {
 }
 
 type SongBookmark struct {
-	AlbumName     string       `json:"artistName"`
+	AlbumName     string       `json:"albumName"`
 	ArtURL        string       `json:"artUrl"`
 	ArtistName    string       `json:"artistName"`
 	BookmarkToken string       `json:"bookmarkToken"`
