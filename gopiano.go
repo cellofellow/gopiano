@@ -16,7 +16,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -30,16 +29,16 @@ import (
 // Describes a particular type of client to emulate.
 type ClientDescription struct {
 	DeviceModel string
-	Username string
-	Password string
-	BaseURL string
-	EncryptKey string
-	DecryptKey string
-	Version string
+	Username    string
+	Password    string
+	BaseURL     string
+	EncryptKey  string
+	DecryptKey  string
+	Version     string
 }
 
 // The data for the Android client.
-var AndroidClient ClientDescription = ClientDescription{
+var AndroidClient = ClientDescription{
 	DeviceModel: "android-generic",
 	Username:    "android",
 	Password:    "AC7IBG09A3DTSYM4R41UJWL07VLN8JI7",
@@ -63,7 +62,7 @@ type Client struct {
 }
 
 // Create a new Client with specified ClientDescription
-func NewClient(d ClientDescription) (*Client, error){
+func NewClient(d ClientDescription) (*Client, error) {
 	client := new(http.Client)
 	encrypter, err := blowfish.NewCipher([]byte(d.EncryptKey))
 	if err != nil {
@@ -152,7 +151,7 @@ func (c *Client) PandoraCall(protocol string, method string, body io.Reader, dat
 	}
 
 	var errResp responses.ErrorResponse
-	responseBody, err := ioutil.ReadAll(resp.Body)
+	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
@@ -178,7 +177,7 @@ func (c *Client) PandoraCall(protocol string, method string, body io.Reader, dat
 // Client.BlowfishCall first encrypts the body before calling PandoraCall.
 // Arguments are identical to PandoraCall.
 func (c *Client) BlowfishCall(protocol string, method string, body io.Reader, data interface{}) error {
-	bodyBytes, err := ioutil.ReadAll(body)
+	bodyBytes, err := io.ReadAll(body)
 	if err != nil {
 		return err
 	}

@@ -1,0 +1,4 @@
+github.com/cellofellow/gopiano v0.0.0-20190331163816-7b1fa67bb8c3 h1:b39ds460jkEHIs738hvTJAF/xb1cx5879eS5IpttmuM=
+github.com/cellofellow/gopiano v0.0.0-20190331163816-7b1fa67bb8c3/go.mod h1:wDw6HWSa3BmE6TLahzUprDDaY86emu0cTxZetsHih+Q=
+golang.org/x/crypto v0.11.0 h1:6Ewdq3tDic1mg5xRO4milcWCfMVQhI4NkqWWvqejpuA=
+golang.org/x/crypto v0.11.0/go.mod h1:xgJhtzW8F9jGdVFWZESrid1U1bjeNy4zgy5cRr/CIio=
