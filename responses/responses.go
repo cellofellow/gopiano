@@ -1,6 +1,4 @@
-/*
-Structs used with json.Unmarshal in processing responses from the Pandora API.
-*/
+// Package responses provides structs used with json.Unmarshal in processing responses from the Pandora API.
 package responses
 
 import (
@@ -8,7 +6,8 @@ import (
 	"time"
 )
 
-var ErrorCodeMap map[int]string = map[int]string{
+// ErrorCodeMap maps Pandora API error codes to their string names.
+var ErrorCodeMap = map[int]string{
 	0:    "INTERNAL",
 	1:    "MAINTENCANCE_MODE",
 	2:    "URL_PARAM_MISSING_METHOD",
@@ -55,6 +54,7 @@ var ErrorCodeMap map[int]string = map[int]string{
 	1039: "PLAYLIST_EXCEEDED",
 }
 
+// ErrorResponse represents an API error response from Pandora.
 type ErrorResponse struct {
 	Stat    string `json:"stat"`
 	Code    int    `json:"code"`
@@ -82,12 +82,13 @@ type DateResponse struct {
 	TimezoneOffset int `json:"timezoneOffset"`
 }
 
-// Get this mess of ints as a time.Time object. Much nicer.
+// GetDate converts the DateResponse to a time.Time object.
 func (d DateResponse) GetDate() time.Time {
 	return time.Date(1900+d.Year, time.Month(d.Month), d.Date, d.Hours, d.Minutes, d.Seconds,
 		d.Nanos, time.FixedZone("Local Time", d.TimezoneOffset*60))
 }
 
+// AuthPartnerLogin represents the response from auth.partnerLogin.
 type AuthPartnerLogin struct {
 	Result struct {
 		SyncTime         string `json:"syncTime"`
@@ -107,6 +108,7 @@ type AuthPartnerLogin struct {
 	}
 }
 
+// AuthUserLogin represents the response from auth.userLogin.
 type AuthUserLogin struct {
 	Result struct {
 		CanListen                   bool   `json:"canListen"`
@@ -127,6 +129,7 @@ type AuthUserLogin struct {
 	} `json:"result"`
 }
 
+// UserCanSubscribe represents the response from user.canSubscribe.
 type UserCanSubscribe struct {
 	Result struct {
 		CanSubscribe bool `json:"canSubscribe"`
@@ -134,8 +137,10 @@ type UserCanSubscribe struct {
 	} `json:"result"`
 }
 
+// UserCreateUser represents the response from user.createUser.
 type UserCreateUser AuthUserLogin
 
+// ArtistBookmark represents an artist bookmark in API responses.
 type ArtistBookmark struct {
 	ArtURL        string       `json:"artUrl"`
 	ArtistName    string       `json:"artistName"`
@@ -144,10 +149,12 @@ type ArtistBookmark struct {
 	MusicToken    string       `json:"musicToken"`
 }
 
+// BookmarkAddArtistBookmark represents the response from bookmark.addArtistBookmark.
 type BookmarkAddArtistBookmark struct {
 	Result ArtistBookmark `json:"result"`
 }
 
+// SongBookmark represents a song bookmark in API responses.
 type SongBookmark struct {
 	AlbumName     string       `json:"albumName"`
 	ArtURL        string       `json:"artUrl"`
@@ -160,10 +167,12 @@ type SongBookmark struct {
 	SongName      string       `json:"songName"`
 }
 
+// BookmarkAddSongBookmark represents the response from bookmark.addSongBookmark.
 type BookmarkAddSongBookmark struct {
 	Result SongBookmark `json:"result"`
 }
 
+// Station represents a Pandora station in API responses.
 type Station struct {
 	SuppressVideoAds bool         `json:"suppressVideoAds"`
 	StationID        string       `json:"stationId"`
@@ -200,6 +209,7 @@ type Station struct {
 	} `json:"feedback"`
 }
 
+// StationList represents a list of stations that implements sort.Interface.
 type StationList []Station
 
 // Make Station implement sort.Interface.
@@ -215,6 +225,7 @@ func (s StationList) Less(i, j int) bool {
 	return s[i].StationName < s[j].StationName
 }
 
+// UserGetBookmarks represents the response from user.getBookmarks.
 type UserGetBookmarks struct {
 	Result struct {
 		Artists []ArtistBookmark `json:"artists"`
@@ -222,6 +233,7 @@ type UserGetBookmarks struct {
 	} `json:"result"`
 }
 
+// UserGetStationList represents the response from user.getStationList.
 type UserGetStationList struct {
 	Result struct {
 		Stations StationList `json:"stations"`
@@ -229,12 +241,14 @@ type UserGetStationList struct {
 	} `json:"result"`
 }
 
+// UserGetStationListChecksum represents the response from user.getStationListChecksum.
 type UserGetStationListChecksum struct {
 	Result struct {
 		Checksum string `json:"checksum"`
 	} `json:"result"`
 }
 
+// MusicSearch represents the response from music.search.
 type MusicSearch struct {
 	Result struct {
 		NearMatchesAvailable bool   `json:"nearMatchesAvailable"`
@@ -254,6 +268,7 @@ type MusicSearch struct {
 	} `json:"result"`
 }
 
+// FeedbackResponse represents feedback data in API responses.
 type FeedbackResponse struct {
 	ArtistName  string       `json:"artistName"`
 	SongName    string       `json:"songName"`
@@ -262,10 +277,12 @@ type FeedbackResponse struct {
 	IsPositive  bool         `json:"isPositive"`
 }
 
+// StationAddFeedback represents the response from station.addFeedback.
 type StationAddFeedback struct {
 	Result FeedbackResponse `json:"result"`
 }
 
+// StationAddMusic represents the response from station.addMusic.
 type StationAddMusic struct {
 	Result struct {
 		ArtistName  string       `json:"artistName"`
@@ -274,16 +291,22 @@ type StationAddMusic struct {
 	} `json:"result"`
 }
 
+// StationResponse represents a generic station response wrapper.
 type StationResponse struct {
 	Result Station `json:"result"`
 }
 type (
+	// StationCreateStation represents the response from station.createStation.
 	StationCreateStation          StationResponse
+	// StationGetStation represents the response from station.getStation.
 	StationGetStation             StationResponse
+	// StationRenameStation represents the response from station.renameStation.
 	StationRenameStation          StationResponse
+	// StationTransformSharedStation represents the response from station.transformSharedStation.
 	StationTransformSharedStation StationResponse
 )
 
+// StationGetGenreStations represents the response from station.getGenreStations.
 type StationGetGenreStations struct {
 	Result struct {
 		Categories []struct {
@@ -297,12 +320,14 @@ type StationGetGenreStations struct {
 	} `json:"result"`
 }
 
+// StationGetGenreStationsChecksum represents the response from station.getGenreStationsChecksum.
 type StationGetGenreStationsChecksum struct {
 	Result struct {
 		Checksum string `json:"checksum"`
 	} `json:"result"`
 }
 
+// StationGetPlaylist represents the response from station.getPlaylist.
 type StationGetPlaylist struct {
 	Result struct {
 		Items []struct {
@@ -338,6 +363,7 @@ type StationGetPlaylist struct {
 	} `json:"result"`
 }
 
+// ExplainTrack represents the response from track.explainTrack.
 type ExplainTrack struct {
 	Result struct {
 		Explanations []struct {
