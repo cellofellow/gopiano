@@ -147,7 +147,7 @@ type BookmarkAddArtistBookmark struct {
 }
 
 type SongBookmark struct {
-	AlbumName     string       `json:"artistName"`
+	AlbumName     string       `json:"albumName"`
 	ArtURL        string       `json:"artUrl"`
 	ArtistName    string       `json:"artistName"`
 	BookmarkToken string       `json:"bookmarkToken"`
