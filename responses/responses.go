@@ -212,7 +212,7 @@ type Station struct {
 // StationList represents a list of stations that implements sort.Interface.
 type StationList []Station
 
-// Make Station implement sort.Interface.
+// Len returns the number of stations in the list.
 func (s StationList) Len() int {
 	return len(s)
 }
