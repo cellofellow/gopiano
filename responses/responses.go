@@ -7,7 +7,7 @@ import (
 )
 
 // ErrorCodeMap maps Pandora API error codes to their string names.
-var ErrorCodeMap = map[int]string{ // nolint:gochecknoglobals // part of public API
+var ErrorCodeMap = map[int]string{ //nolint:gochecknoglobals // part of public API
 	0:    "INTERNAL",
 	1:    "MAINTENCANCE_MODE",
 	2:    "URL_PARAM_MISSING_METHOD",
@@ -85,7 +85,7 @@ type DateResponse struct {
 // GetDate converts the DateResponse to a time.Time object.
 func (d DateResponse) GetDate() time.Time {
 	return time.Date(1900+d.Year, time.Month(d.Month), d.Date, d.Hours, d.Minutes, d.Seconds,
-		d.Nanos, time.FixedZone("Local Time", d.TimezoneOffset*60)) // nolint:mnd // 60 seconds per minute
+		d.Nanos, time.FixedZone("Local Time", d.TimezoneOffset*60)) //nolint:mnd // 60 seconds per minute
 }
 
 // AuthPartnerLogin represents the response from auth.partnerLogin.
@@ -114,7 +114,7 @@ type AuthUserLogin struct {
 		CanListen                   bool   `json:"canListen"`
 		HasAudioAds                 bool   `json:"hasAudioAds"`
 		IsCapped                    bool   `json:"isCapped,omitempty"`
-		ListeningTimeoutAlertMsgUri string `json:"listeningTimeoutAlertMsgUri"`
+		ListeningTimeoutAlertMsgUri string `json:"listeningTimeoutAlertMsgUri"` //nolint:revive // matches Pandora API
 		ListeningTimeoutMinutes     string `json:"listeningTimeoutMinutes"`
 		MaxStationsAllowed          int    `json:"maxStationsAllowed"`
 		MinimumAdRefreshInterval    int    `json:"minimumAdRefreshInterval"`

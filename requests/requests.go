@@ -18,7 +18,7 @@ type AuthUserLogin struct {
 	LoginType                     string `json:"loginType"` // Should always be "user"
 	SyncTime                      int    `json:"syncTime"`
 	IncludeAdAttributes           bool   `json:"includeAdAttributes,omitempty"`
-	IncludeDemographics           bool   `json:"IncludeDemographics,omitempty"`
+	IncludeDemographics           bool   `json:"IncludeDemographics,omitempty"`   //nolint:tagliatelle // matches Pandora API
 	IncludePandoraOneInfo         bool   `json:"includePandoraOneInfo,omitempty"` // Appears to do nothing.
 	IncludeStationArtURL          bool   `json:"includeStationArtUrl,omitempty"`
 	IncludeSubscriptionExpiration bool   `json:"includeSubscriptionExpiration,omitempty"`
