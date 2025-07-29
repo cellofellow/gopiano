@@ -151,7 +151,9 @@ func (c *Client) PandoraCall(protocol, method string, body io.Reader, data inter
 		return err
 	}
 	defer func() {
-		_ = resp.Body.Close() //nolint:errcheck // ignore close error as we prioritize the main error
+		if closeErr := resp.Body.Close(); closeErr != nil {
+			// Log or handle close error if needed, but don't override main error
+		}
 	}()
 
 	var errResp responses.PandoraError
