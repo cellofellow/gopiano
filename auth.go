@@ -38,7 +38,7 @@ func (c *Client) AuthPartnerLogin() (*responses.AuthPartnerLogin, error) {
 	if err != nil {
 		return nil, err
 	}
-	resp.Result.SyncTime = string(syncTime[4:14])
+	resp.Result.SyncTime = syncTime[4:14]
 	i, err := strconv.ParseInt(resp.Result.SyncTime, 10, 32)
 	if err != nil {
 		return nil, err

@@ -3,7 +3,10 @@ package gopiano
 import "testing"
 
 func Test_Encrypt_1(t *testing.T) {
-	client, _ := NewClient(AndroidClient)
+	client, err := NewClient(AndroidClient)
+	if err != nil {
+		t.Fatal(err)
+	}
 	testString := "foobar"
 	expected := "3c739d4e29b5d6c6"
 	encrypted := client.encrypt(testString)
@@ -15,7 +18,10 @@ func Test_Encrypt_1(t *testing.T) {
 }
 
 func Test_Decrypt_1(t *testing.T) {
-	client, _ := NewClient(AndroidClient)
+	client, err := NewClient(AndroidClient)
+	if err != nil {
+		t.Fatal(err)
+	}
 	expected := "foobar"
 	testString := "95b6027f2d427dc0"
 	decrypted, err := client.decrypt(testString)

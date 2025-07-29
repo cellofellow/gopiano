@@ -13,16 +13,16 @@ by these client methods.
 package gopiano
 
 import (
+	"context"
 	"encoding/hex"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
 
-	"golang.org/x/crypto/blowfish"
+	"golang.org/x/crypto/blowfish" //nolint:staticcheck // required by Pandora API
 
 	"github.com/cellofellow/gopiano/responses"
 )
@@ -39,7 +39,7 @@ type ClientDescription struct {
 }
 
 // AndroidClient is the data for the Android client.
-var AndroidClient = ClientDescription{
+var AndroidClient = ClientDescription{ //nolint:gochecknoglobals // exported by design
 	DeviceModel: "android-generic",
 	Username:    "android",
 	Password:    "AC7IBG09A3DTSYM4R41UJWL07VLN8JI7",
@@ -139,7 +139,7 @@ func (c *Client) PandoraCall(protocol, method string, body io.Reader, data inter
 	}
 	callURL := protocol + c.description.BaseURL + "?" + urlArgs.Encode()
 
-	req, err := http.NewRequest(http.MethodPost, callURL, body)
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodPost, callURL, body)
 	if err != nil {
 		return err
 	}
@@ -150,9 +150,12 @@ func (c *Client) PandoraCall(protocol, method string, body io.Reader, data inter
 	if err != nil {
 		return err
 	}
+	defer func() {
+		_ = resp.Body.Close() //nolint:errcheck // ignore close error as we prioritize the main error
+	}()
 
 	var errResp responses.ErrorResponse
-	responseBody, err := ioutil.ReadAll(resp.Body)
+	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
@@ -178,7 +181,7 @@ func (c *Client) PandoraCall(protocol, method string, body io.Reader, data inter
 // BlowfishCall first encrypts the body before calling PandoraCall.
 // Arguments are identical to PandoraCall.
 func (c *Client) BlowfishCall(protocol, method string, body io.Reader, data interface{}) error {
-	bodyBytes, err := ioutil.ReadAll(body)
+	bodyBytes, err := io.ReadAll(body)
 	if err != nil {
 		return err
 	}
