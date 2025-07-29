@@ -31,9 +31,11 @@ type userTokenGeneric struct {
 	SyncTime      int    `json:"syncTime"`
 	UserAuthToken string `json:"userAuthToken"`
 }
-type UserGetBookmarks userTokenGeneric
-type UserGetStationListChecksum userTokenGeneric
-type UserCanSubscribe userTokenGeneric
+type (
+	UserGetBookmarks           userTokenGeneric
+	UserGetStationListChecksum userTokenGeneric
+	UserCanSubscribe           userTokenGeneric
+)
 
 type UserCreateUser struct {
 	AccountType      string `json:"accountType"`
@@ -72,9 +74,11 @@ type trackAction struct {
 	SyncTime      int    `json:"syncTime"`
 	UserAuthToken string `json:"userAuthToken"`
 }
-type UserSleepSong trackAction
-type BookmarkAddArtistBookmark trackAction
-type BookmarkAddSongBookmark trackAction
+type (
+	UserSleepSong             trackAction
+	BookmarkAddArtistBookmark trackAction
+	BookmarkAddSongBookmark   trackAction
+)
 
 type MusicSearch struct {
 	SearchText    string `json:"searchText"`
@@ -122,13 +126,15 @@ type StationDeleteMusic struct {
 	UserAuthToken string `json:"userAuthToken"`
 }
 
-type StationGetGenreStations userTokenGeneric
-type StationGetGenreStationsChecksum userTokenGeneric
+type (
+	StationGetGenreStations         userTokenGeneric
+	StationGetGenreStationsChecksum userTokenGeneric
+)
 
 type StationGetPlaylist struct {
-	StationToken       string        `json:"stationToken"`
-	SyncTime           int           `json:"syncTime"`
-	UserAuthToken      string        `json:"userAuthToken"`
+	StationToken  string `json:"stationToken"`
+	SyncTime      int    `json:"syncTime"`
+	UserAuthToken string `json:"userAuthToken"`
 }
 
 type StationGetStation struct {

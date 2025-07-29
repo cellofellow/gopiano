@@ -8,9 +8,9 @@ import (
 	"github.com/cellofellow/gopiano/responses"
 )
 
-// Client.ExplainTrack retrieves an incomplete list of attributes assigned specified son by the
-// Music Genome Project
-// Calls API method "track.explainTrack"
+// ExplainTrack retrieves an incomplete list of attributes assigned to a specified song by the
+// Music Genome Project.
+// Calls API method "track.explainTrack".
 func (c *Client) ExplainTrack(trackToken string) (*responses.ExplainTrack, error) {
 	requestData := requests.ExplainTrack{
 		TrackToken:    trackToken,
@@ -31,8 +31,8 @@ func (c *Client) ExplainTrack(trackToken string) (*responses.ExplainTrack, error
 	return &resp, nil
 }
 
-// Client.MusicSearch searches for music, which can be used to create a new or add seeds to a station.
-// Calls API method "music.search"
+// MusicSearch searches for music, which can be used to create a new or add seeds to a station.
+// Calls API method "music.search".
 func (c *Client) MusicSearch(searchText string) (*responses.MusicSearch, error) {
 	requestData := requests.MusicSearch{
 		SearchText:    searchText,
@@ -53,9 +53,9 @@ func (c *Client) MusicSearch(searchText string) (*responses.MusicSearch, error) 
 	return &resp, nil
 }
 
-// Client.AddArtistBookmark bookmarks an artist.
+// BookmarkAddArtistBookmark bookmarks an artist.
 // Argument trackToken is a token of a specific artist.
-// Calls API method "bookmark.addArtistBookmark"
+// Calls API method "bookmark.addArtistBookmark".
 func (c *Client) BookmarkAddArtistBookmark(trackToken string) (*responses.BookmarkAddArtistBookmark, error) {
 	requestData := requests.BookmarkAddArtistBookmark{
 		TrackToken:    trackToken,
@@ -76,9 +76,9 @@ func (c *Client) BookmarkAddArtistBookmark(trackToken string) (*responses.Bookma
 	return &resp, nil
 }
 
-// Client.BookmarkAddSongBookmark bookmarks a song.
+// BookmarkAddSongBookmark bookmarks a song.
 // Argument trackToken is a token of a specific song.
-// Calls API method "bookmark.addSongBookmark"
+// Calls API method "bookmark.addSongBookmark".
 func (c *Client) BookmarkAddSongBookmark(trackToken string) (*responses.BookmarkAddSongBookmark, error) {
 	requestData := requests.BookmarkAddSongBookmark{
 		TrackToken:    trackToken,

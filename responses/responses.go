@@ -3,8 +3,10 @@ Structs used with json.Unmarshal in processing responses from the Pandora API.
 */
 package responses
 
-import "fmt"
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 var ErrorCodeMap map[int]string = map[int]string{
 	0:    "INTERNAL",
@@ -200,7 +202,7 @@ type Station struct {
 
 type StationList []Station
 
-// Make Station implement sort.Interface
+// Make Station implement sort.Interface.
 func (s StationList) Len() int {
 	return len(s)
 }
@@ -275,10 +277,12 @@ type StationAddMusic struct {
 type StationResponse struct {
 	Result Station `json:"result"`
 }
-type StationCreateStation StationResponse
-type StationGetStation StationResponse
-type StationRenameStation StationResponse
-type StationTransformSharedStation StationResponse
+type (
+	StationCreateStation          StationResponse
+	StationGetStation             StationResponse
+	StationRenameStation          StationResponse
+	StationTransformSharedStation StationResponse
+)
 
 type StationGetGenreStations struct {
 	Result struct {
