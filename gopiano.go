@@ -150,7 +150,7 @@ func (c *Client) PandoraCall(protocol, method string, body io.Reader, data inter
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer resp.Body.Close() //nolint:errcheck // Error from closing response body in defer is not actionable
 
 	var errResp responses.PandoraError
 	responseBody, err := io.ReadAll(resp.Body)
