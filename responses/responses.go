@@ -7,7 +7,7 @@ import (
 )
 
 // ErrorCodeMap maps Pandora API error codes to their string names.
-var ErrorCodeMap = map[int]string{
+var ErrorCodeMap = map[int]string{ // nolint:gochecknoglobals // part of public API
 	0:    "INTERNAL",
 	1:    "MAINTENCANCE_MODE",
 	2:    "URL_PARAM_MISSING_METHOD",
@@ -54,14 +54,14 @@ var ErrorCodeMap = map[int]string{
 	1039: "PLAYLIST_EXCEEDED",
 }
 
-// ErrorResponse represents an API error response from Pandora.
-type ErrorResponse struct {
+// PandoraError represents an API error response from Pandora.
+type PandoraError struct {
 	Stat    string `json:"stat"`
 	Code    int    `json:"code"`
 	Message string `json:"message"`
 }
 
-func (e ErrorResponse) Error() string {
+func (e PandoraError) Error() string {
 	return fmt.Sprintf("Pandora Error: %d %s", e.Code, e.Message)
 }
 
@@ -85,7 +85,7 @@ type DateResponse struct {
 // GetDate converts the DateResponse to a time.Time object.
 func (d DateResponse) GetDate() time.Time {
 	return time.Date(1900+d.Year, time.Month(d.Month), d.Date, d.Hours, d.Minutes, d.Seconds,
-		d.Nanos, time.FixedZone("Local Time", d.TimezoneOffset*60))
+		d.Nanos, time.FixedZone("Local Time", d.TimezoneOffset*60)) // nolint:mnd // 60 seconds per minute
 }
 
 // AuthPartnerLogin represents the response from auth.partnerLogin.
@@ -297,11 +297,11 @@ type StationResponse struct {
 }
 type (
 	// StationCreateStation represents the response from station.createStation.
-	StationCreateStation          StationResponse
+	StationCreateStation StationResponse
 	// StationGetStation represents the response from station.getStation.
-	StationGetStation             StationResponse
+	StationGetStation StationResponse
 	// StationRenameStation represents the response from station.renameStation.
-	StationRenameStation          StationResponse
+	StationRenameStation StationResponse
 	// StationTransformSharedStation represents the response from station.transformSharedStation.
 	StationTransformSharedStation StationResponse
 )
