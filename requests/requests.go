@@ -1,8 +1,7 @@
-/*
-Structs for use with json.Marshal when sending requests to the Pandora API.
-*/
+// Package requests provides structs for use with json.Marshal when sending requests to the Pandora API.
 package requests
 
+// AuthPartnerLogin represents the request data for auth.partnerLogin.
 type AuthPartnerLogin struct {
 	Username    string `json:"username"`
 	Password    string `json:"password"`
@@ -11,6 +10,7 @@ type AuthPartnerLogin struct {
 	IncludeURLs bool   `json:"includeUrls,omitempty"`
 }
 
+// AuthUserLogin represents the request data for auth.userLogin.
 type AuthUserLogin struct {
 	PartnerAuthToken              string `json:"partnerAuthToken"`
 	Username                      string `json:"username"`
@@ -32,11 +32,15 @@ type userTokenGeneric struct {
 	UserAuthToken string `json:"userAuthToken"`
 }
 type (
-	UserGetBookmarks           userTokenGeneric
+	// UserGetBookmarks represents the request data for user.getBookmarks.
+	UserGetBookmarks userTokenGeneric
+	// UserGetStationListChecksum represents the request data for user.getStationListChecksum.
 	UserGetStationListChecksum userTokenGeneric
-	UserCanSubscribe           userTokenGeneric
+	// UserCanSubscribe represents the request data for user.canSubscribe.
+	UserCanSubscribe userTokenGeneric
 )
 
+// UserCreateUser represents the request data for user.createUser.
 type UserCreateUser struct {
 	AccountType      string `json:"accountType"`
 	BirthYear        int    `json:"birthYear"`
@@ -51,18 +55,21 @@ type UserCreateUser struct {
 	ZipCode          int    `json:"zip"`
 }
 
+// UserEmailPassword represents the request data for user.emailPassword.
 type UserEmailPassword struct {
 	PartnerAuthToken string `json:"partnerAuthToken"`
 	SyncTime         int    `json:"syncTime"`
 	Username         string `json:"username"`
 }
 
+// UserGetStationList represents the request data for user.getStationList.
 type UserGetStationList struct {
 	IncludeStationArtURL bool   `json:"includeStationArtUrl,omitempty"`
 	SyncTime             int    `json:"syncTime"`
 	UserAuthToken        string `json:"userAuthToken"`
 }
 
+// UserSetQuickMix represents the request data for user.setQuickMix.
 type UserSetQuickMix struct {
 	QuickMixStationIDs []string `json:"quickMixStationIds"`
 	SyncTime           int      `json:"syncTime"`
@@ -75,17 +82,22 @@ type trackAction struct {
 	UserAuthToken string `json:"userAuthToken"`
 }
 type (
-	UserSleepSong             trackAction
+	// UserSleepSong represents the request data for user.sleepSong.
+	UserSleepSong trackAction
+	// BookmarkAddArtistBookmark represents the request data for bookmark.addArtistBookmark.
 	BookmarkAddArtistBookmark trackAction
-	BookmarkAddSongBookmark   trackAction
+	// BookmarkAddSongBookmark represents the request data for bookmark.addSongBookmark.
+	BookmarkAddSongBookmark trackAction
 )
 
+// MusicSearch represents the request data for music.search.
 type MusicSearch struct {
 	SearchText    string `json:"searchText"`
 	SyncTime      int    `json:"syncTime"`
 	UserAuthToken string `json:"userAuthToken"`
 }
 
+// StationCreateStation represents the request data for station.createStation.
 type StationCreateStation struct {
 	MusicToken    string `json:"musicToken,omitempty"`
 	TrackToken    string `json:"trackToken,omitempty"`
@@ -94,12 +106,14 @@ type StationCreateStation struct {
 	UserAuthToken string `json:"userAuthToken"`
 }
 
+// StationDeleteStation represents the request data for station.deleteStation.
 type StationDeleteStation struct {
 	StationToken  string `json:"stationToken"`
 	SyncTime      int    `json:"syncTime"`
 	UserAuthToken string `json:"userAuthToken"`
 }
 
+// StationAddFeedback represents the request data for station.addFeedback.
 type StationAddFeedback struct {
 	TrackToken    string `json:"trackToken"`
 	IsPositive    bool   `json:"isPositive"`
@@ -107,12 +121,14 @@ type StationAddFeedback struct {
 	UserAuthToken string `json:"userAuthToken"`
 }
 
+// StationDeleteFeedback represents the request data for station.deleteFeedback.
 type StationDeleteFeedback struct {
 	FeedbackID    string `json:"feedbackId"`
 	SyncTime      int    `json:"syncTime"`
 	UserAuthToken string `json:"userAuthToken"`
 }
 
+// StationAddMusic represents the request data for station.addMusic.
 type StationAddMusic struct {
 	MusicToken    string `json:"musicToken"`
 	StationToken  string `json:"stationToken"`
@@ -120,6 +136,7 @@ type StationAddMusic struct {
 	UserAuthToken string `json:"userAuthToken"`
 }
 
+// StationDeleteMusic represents the request data for station.deleteMusic.
 type StationDeleteMusic struct {
 	SeedID        string `json:"seedId"`
 	SyncTime      int    `json:"syncTime"`
@@ -127,16 +144,20 @@ type StationDeleteMusic struct {
 }
 
 type (
-	StationGetGenreStations         userTokenGeneric
+	// StationGetGenreStations represents the request data for station.getGenreStations.
+	StationGetGenreStations userTokenGeneric
+	// StationGetGenreStationsChecksum represents the request data for station.getGenreStationsChecksum.
 	StationGetGenreStationsChecksum userTokenGeneric
 )
 
+// StationGetPlaylist represents the request data for station.getPlaylist.
 type StationGetPlaylist struct {
 	StationToken  string `json:"stationToken"`
 	SyncTime      int    `json:"syncTime"`
 	UserAuthToken string `json:"userAuthToken"`
 }
 
+// StationGetStation represents the request data for station.getStation.
 type StationGetStation struct {
 	StationToken              string `json:"stationToken"`
 	IncludeExtendedAttributes bool   `json:"includeExtendedAttributes,omitempty"`
@@ -144,6 +165,7 @@ type StationGetStation struct {
 	UserAuthToken             string `json:"userAuthToken"`
 }
 
+// StationShareStation represents the request data for station.shareStation.
 type StationShareStation struct {
 	StationID     string   `json:"stationId"`
 	StationToken  string   `json:"stationToken"`
@@ -152,6 +174,7 @@ type StationShareStation struct {
 	UserAuthToken string   `json:"userAuthToken"`
 }
 
+// StationRenameStation represents the request data for station.renameStation.
 type StationRenameStation struct {
 	StationToken  string `json:"stationToken"`
 	StationName   string `json:"stationName"`
@@ -159,12 +182,14 @@ type StationRenameStation struct {
 	UserAuthToken string `json:"userAuthToken"`
 }
 
+// StationTransformSharedStation represents the request data for station.transformSharedStation.
 type StationTransformSharedStation struct {
 	StationToken  string `json:"stationToken"`
 	SyncTime      int    `json:"syncTime"`
 	UserAuthToken string `json:"userAuthToken"`
 }
 
+// ExplainTrack represents the request data for track.explainTrack.
 type ExplainTrack struct {
 	TrackToken    string `json:"trackToken"`
 	SyncTime      int    `json:"syncTime"`
