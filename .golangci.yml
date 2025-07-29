@@ -115,7 +115,7 @@ formatters:
     - goimports
   settings:
     gofumpt:
-      module-path: "github.com/unclesp1d3r/opnFocus"
+      module-path: "github.com/cellofellow/gopiano"
       extra-rules: true
   exclusions:
     generated: lax
