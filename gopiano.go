@@ -13,33 +13,33 @@ by these client methods.
 package gopiano
 
 import (
+	"context"
 	"encoding/hex"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
 
-	"golang.org/x/crypto/blowfish"
+	"golang.org/x/crypto/blowfish" //nolint:staticcheck // required by Pandora API
 
 	"github.com/cellofellow/gopiano/responses"
 )
 
-// Describes a particular type of client to emulate.
+// ClientDescription describes a particular type of client to emulate.
 type ClientDescription struct {
 	DeviceModel string
-	Username string
-	Password string
-	BaseURL string
-	EncryptKey string
-	DecryptKey string
-	Version string
+	Username    string
+	Password    string
+	BaseURL     string
+	EncryptKey  string
+	DecryptKey  string
+	Version     string
 }
 
-// The data for the Android client.
-var AndroidClient ClientDescription = ClientDescription{
+// AndroidClient is the data for the Android client.
+var AndroidClient = ClientDescription{ //nolint:gochecknoglobals // exported by design
 	DeviceModel: "android-generic",
 	Username:    "android",
 	Password:    "AC7IBG09A3DTSYM4R41UJWL07VLN8JI7",
@@ -49,7 +49,7 @@ var AndroidClient ClientDescription = ClientDescription{
 	Version:     "5",
 }
 
-// Class for a Client object.
+// Client represents a Pandora client.
 type Client struct {
 	description      ClientDescription
 	http             *http.Client
@@ -62,8 +62,8 @@ type Client struct {
 	userID           string
 }
 
-// Create a new Client with specified ClientDescription
-func NewClient(d ClientDescription) (*Client, error){
+// NewClient creates a new Client with specified ClientDescription.
+func NewClient(d ClientDescription) (*Client, error) {
 	client := new(http.Client)
 	encrypter, err := blowfish.NewCipher([]byte(d.EncryptKey))
 	if err != nil {
@@ -116,12 +116,12 @@ func (c *Client) decrypt(data string) (string, error) {
 	return strings.Join(chunks, ""), nil
 }
 
-// Client.PandoraCall is the basic function to send an HTTP POST to pandora.com.
+// PandoraCall is the basic function to send an HTTP POST to pandora.com.
 // Arguments: protocol is either "https://" or "http://", method is whatever must be in
 // the "method" url argument and specifies the remote procedure to call, body is an io.Reader
 // to be passed directly into http.Post, and data is to be passed to json.Unmarshal to parse
 // the JSON response.
-func (c *Client) PandoraCall(protocol string, method string, body io.Reader, data interface{}) error {
+func (c *Client) PandoraCall(protocol, method string, body io.Reader, data interface{}) error {
 	urlArgs := url.Values{
 		"method": {method},
 	}
@@ -137,22 +137,23 @@ func (c *Client) PandoraCall(protocol string, method string, body io.Reader, dat
 	} else if c.userAuthToken != "" {
 		urlArgs.Add("auth_token", c.userAuthToken)
 	}
-	callUrl := protocol + c.description.BaseURL + "?" + urlArgs.Encode()
+	callURL := protocol + c.description.BaseURL + "?" + urlArgs.Encode()
 
-	req, err := http.NewRequest("POST", callUrl, body)
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodPost, callURL, body)
 	if err != nil {
 		return err
 	}
 	req.Header.Add("User-Agent", "gopiano")
-	req.Header.Add("Content-type", "text/plain")
+	req.Header.Add("Content-Type", "text/plain")
 
 	resp, err := c.http.Do(req)
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close() //nolint:errcheck // Error from closing response body in defer is not actionable
 
-	var errResp responses.ErrorResponse
-	responseBody, err := ioutil.ReadAll(resp.Body)
+	var errResp responses.PandoraError
+	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
@@ -175,10 +176,10 @@ func (c *Client) PandoraCall(protocol string, method string, body io.Reader, dat
 	return nil
 }
 
-// Client.BlowfishCall first encrypts the body before calling PandoraCall.
+// BlowfishCall first encrypts the body before calling PandoraCall.
 // Arguments are identical to PandoraCall.
-func (c *Client) BlowfishCall(protocol string, method string, body io.Reader, data interface{}) error {
-	bodyBytes, err := ioutil.ReadAll(body)
+func (c *Client) BlowfishCall(protocol, method string, body io.Reader, data interface{}) error {
+	bodyBytes, err := io.ReadAll(body)
 	if err != nil {
 		return err
 	}
@@ -186,8 +187,7 @@ func (c *Client) BlowfishCall(protocol string, method string, body io.Reader, da
 	return c.PandoraCall(protocol, method, encrypted, data)
 }
 
-// Most calls require a SyncTime int argument (Unix epoch). We store our current time offset
-// but must calculate the SyncTime for each call. This method does that.
+// GetSyncTime calculates the SyncTime for each call based on the timeOffset.
 func (c *Client) GetSyncTime() int {
 	return int(time.Now().Add(c.timeOffset).Unix())
 }

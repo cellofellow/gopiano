@@ -10,10 +10,10 @@ import (
 	"github.com/cellofellow/gopiano/responses"
 )
 
-// Client.AuthPartnerLogin establishes a Partner session with provided
+// AuthPartnerLogin establishes a Partner session with provided
 // API username and password and receives a PartnerAuthToken, PartnerID and SyncTime
 // which are stored for later calls.
-// Calls API method "auth.partnerLogin"
+// Calls API method "auth.partnerLogin".
 func (c *Client) AuthPartnerLogin() (*responses.AuthPartnerLogin, error) {
 	requestData := requests.AuthPartnerLogin{
 		Username:    c.description.Username,
@@ -38,25 +38,25 @@ func (c *Client) AuthPartnerLogin() (*responses.AuthPartnerLogin, error) {
 	if err != nil {
 		return nil, err
 	}
-	resp.Result.SyncTime = string(syncTime[4:14])
+	resp.Result.SyncTime = syncTime[4:14]
 	i, err := strconv.ParseInt(resp.Result.SyncTime, 10, 32)
 	if err != nil {
 		return nil, err
 	}
 
 	// Set partner data onto client for later use.
-	c.timeOffset = time.Unix(i, 0).Sub(time.Now())
+	c.timeOffset = time.Until(time.Unix(i, 0))
 	c.partnerAuthToken = resp.Result.PartnerAuthToken
 	c.partnerID = resp.Result.PartnerID
 
 	return &resp, nil
 }
 
-// Client.AuthUserLogin logs in a username and password pair.
+// AuthUserLogin logs in a username and password pair.
 // Receives the UserAuthToken which is used in subsequent calls.
 // You must call AuthPartnerLogin first, and then either this method or UserCreateUser
 // before you proceed.
-// Calls API method "auth.userLogin"
+// Calls API method "auth.userLogin".
 func (c *Client) AuthUserLogin(username, password string) (*responses.AuthUserLogin, error) {
 	requestData := requests.AuthUserLogin{
 		PartnerAuthToken: c.partnerAuthToken,
